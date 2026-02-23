@@ -37,9 +37,9 @@ digraph when_to_use {
 
 ## The Process
 
-Before dispatching any subagent:
-- Check the plan for unresolved inline notes (any line starting with `>>`)
-- If any exist, stop and run `superpowers:plan-annotation-cycle`
+If `>>` notes appear or are discovered while executing tasks:
+- Refresh the plan via `superpowers:writing-plans` and/or `superpowers:plan-annotation-cycle`
+- Continue execution once the relevant plan section is updated
 
 ```dot
 digraph process {
@@ -243,7 +243,6 @@ Done!
 **Required workflow skills:**
 - **superpowers:using-git-worktrees** - REQUIRED: Set up isolated workspace before starting
 - **superpowers:writing-plans** - Creates the plan this skill executes
-- **superpowers:plan-annotation-cycle** - Must clear all `>>` notes before execution
 - **superpowers:requesting-code-review** - Code review template for reviewer subagents
 - **superpowers:finishing-a-development-branch** - Complete development after all tasks
 
