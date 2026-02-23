@@ -17,6 +17,22 @@ Assume they are a skilled developer, but know almost nothing about our toolset o
 
 **Save plans to:** `docs/plans/YYYY-MM-DD-<feature-name>.md`
 
+## Sprint Planning Requirements
+
+When the user asks for a project plan (sprints/tasks/tickets), enforce these rules:
+
+- Do not include timeline/date estimates unless explicitly requested.
+- Organize work into sequential sprints.
+- Every sprint must end in a runnable, testable, demoable software increment that builds on previous sprints.
+- Be exhaustive and technical across relevant streams: application code, data model/migrations, API contracts, UI, infra/config, observability, docs, rollout/risk controls.
+- Use atomic tickets only. A ticket is valid only if it can be completed and committed independently.
+- Every ticket must include:
+  - clear technical objective and scope boundary
+  - explicit dependencies (or "none")
+  - acceptance criteria
+  - required automated tests; if tests do not fit, an explicit alternative validation method with commands/checks and expected outcomes
+- Finish by reviewing and tightening the markdown plan before presenting it. Remove ambiguity, resolve internal inconsistencies, and ensure execution readiness.
+
 ## Bite-Sized Task Granularity
 
 **Each step is one action (2-5 minutes):**
@@ -47,7 +63,17 @@ Assume they are a skilled developer, but know almost nothing about our toolset o
 ## Task Structure
 
 ```markdown
-### Task N: [Component Name]
+## Sprint N: [Sprint Goal]
+
+**Demo Increment:** [What can be run/tested/demoed at sprint end]
+
+### Ticket N.M: [Atomic Ticket Name]
+
+**Objective:** [Single technical outcome]
+**Dependencies:** [Ticket IDs or "none"]
+**Acceptance Criteria:**
+- [Concrete criterion]
+- [Concrete criterion]
 
 **Files:**
 - Create: `exact/path/to/file.py`
@@ -93,6 +119,8 @@ git commit -m "feat: add specific feature"
 - Exact commands with expected output
 - Reference relevant skills with @ syntax
 - DRY, YAGNI, TDD, frequent commits
+- If tests are not appropriate for a ticket, provide explicit validation steps and expected outcomes
+- Each sprint must be demoable and build on previous sprints
 
 ## Execution Handoff
 

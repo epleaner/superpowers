@@ -200,6 +200,7 @@ Done!
 
 **Never:**
 - Start implementation on main/master branch without explicit user consent
+- Let subagents create or switch branches (`git checkout`, `git switch`, `git branch`) unless explicitly requested by the user
 - Skip reviews (spec compliance OR code quality)
 - Proceed with unfixed issues
 - Dispatch multiple implementation subagents in parallel (conflicts)
@@ -226,6 +227,12 @@ Done!
 **If subagent fails task:**
 - Dispatch fix subagent with specific instructions
 - Don't try to fix manually (context pollution)
+
+## Branch Discipline
+
+- Subagents must stay on the controller's current branch.
+- Controller prompt should include: `Current branch: <branch-name>` and `Do not create/switch branches`.
+- Any subagent that changes branch is out-of-spec; stop and return to the intended branch before continuing.
 
 ## Integration
 

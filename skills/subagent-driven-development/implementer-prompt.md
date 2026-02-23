@@ -37,6 +37,11 @@ Task tool (general-purpose):
     6. Report back
 
     Work from: [directory]
+    Current branch: [branch-name]
+
+    **Git branch rule (mandatory):**
+    - Do not run `git checkout`, `git switch`, or create new branches.
+    - Stay on the current branch for all changes and commits.
 
     **While you work:** If you encounter something unexpected or unclear, **ask questions**.
     It's always OK to pause and clarify. Don't guess or make assumptions.

@@ -53,7 +53,7 @@ Present exactly these 4 options:
 ```
 Implementation complete. What would you like to do?
 
-1. Merge back to <base-branch> locally
+1. Give me manual verification steps
 2. Push and create a Pull Request
 3. Keep the branch as-is (I'll handle it later)
 4. Discard this work
@@ -65,26 +65,15 @@ Which option?
 
 ### Step 4: Execute Choice
 
-#### Option 1: Merge Locally
+#### Option 1: Manual Verification Steps
 
-```bash
-# Switch to base branch
-git checkout <base-branch>
+Report concise manual verification steps tailored to the implemented changes:
+- exact command(s) to run
+- expected output or behavior
+- specific files/screens/flows to inspect
+- failure signals to watch for
 
-# Pull latest
-git pull
-
-# Merge feature branch
-git merge <feature-branch>
-
-# Verify tests on merged result
-<test command>
-
-# If tests pass
-git branch -d <feature-branch>
-```
-
-Then: Cleanup worktree (Step 5)
+Do not perform branch integration actions for this option.
 
 #### Option 2: Push and Create PR
 
@@ -135,7 +124,7 @@ Then: Cleanup worktree (Step 5)
 
 ### Step 5: Cleanup Worktree
 
-**For Options 1, 2, 4:**
+**For Options 2 and 4:**
 
 Check if in worktree:
 ```bash
@@ -147,21 +136,21 @@ If yes:
 git worktree remove <worktree-path>
 ```
 
-**For Option 3:** Keep worktree.
+**For Option 1 or 3:** Keep worktree.
 
 ## Quick Reference
 
-| Option | Merge | Push | Keep Worktree | Cleanup Branch |
-|--------|-------|------|---------------|----------------|
-| 1. Merge locally | ✓ | - | - | ✓ |
-| 2. Create PR | - | ✓ | ✓ | - |
+| Option | Verification Guidance | Push | Keep Worktree | Cleanup Branch |
+|--------|-----------------------|------|---------------|----------------|
+| 1. Manual verification steps | ✓ | - | ✓ | - |
+| 2. Create PR | - | ✓ | - | - |
 | 3. Keep as-is | - | - | ✓ | - |
 | 4. Discard | - | - | - | ✓ (force) |
 
 ## Common Mistakes
 
 **Skipping test verification**
-- **Problem:** Merge broken code, create failing PR
+- **Problem:** Give inaccurate completion guidance or create failing PR
 - **Fix:** Always verify tests before offering options
 
 **Open-ended questions**
@@ -170,7 +159,7 @@ git worktree remove <worktree-path>
 
 **Automatic worktree cleanup**
 - **Problem:** Remove worktree when might need it (Option 2, 3)
-- **Fix:** Only cleanup for Options 1 and 4
+- **Fix:** Only cleanup for Options 2 and 4
 
 **No confirmation for discard**
 - **Problem:** Accidentally delete work
@@ -180,7 +169,6 @@ git worktree remove <worktree-path>
 
 **Never:**
 - Proceed with failing tests
-- Merge without verifying tests on result
 - Delete work without confirmation
 - Force-push without explicit request
 
@@ -188,7 +176,7 @@ git worktree remove <worktree-path>
 - Verify tests before offering options
 - Present exactly 4 options
 - Get typed confirmation for Option 4
-- Clean up worktree for Options 1 & 4 only
+- Clean up worktree for Options 2 & 4 only
 
 ## Integration
 
