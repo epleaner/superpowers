@@ -72,7 +72,7 @@ When the user asks for a project plan (sprints/tasks/tickets), enforce these rul
 
 ## Task Structure
 
-```markdown
+````markdown
 ## Sprint N: [Sprint Goal]
 
 **Demo Increment:** [What can be run/tested/demoed at sprint end]
@@ -121,7 +121,7 @@ Expected: PASS
 git add tests/path/test.py src/path/file.py
 git commit -m "feat: add specific feature"
 ```
-```
+````
 
 ## Remember
 - Exact file paths always
