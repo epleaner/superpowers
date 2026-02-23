@@ -19,11 +19,13 @@ Start by understanding the current project context, then ask questions one at a 
 - Prefer multiple choice questions when possible, but open-ended is fine too
 - Only one question per message - if a topic needs more exploration, break it into multiple questions
 - Focus on understanding: purpose, constraints, success criteria
+- When unknowns that can change design appear, **REQUIRED SUB-SKILL:** use `superpowers:research-before-planning`
 
 **Exploring approaches:**
 - Propose 2-3 different approaches with trade-offs
 - Present options conversationally with your recommendation and reasoning
 - Lead with your recommended option and explain why
+- Use research loops in tandem with brainstorming: question -> research update -> decision
 
 **Presenting the design:**
 - Once you believe you understand what you're building, present the design
@@ -31,6 +33,7 @@ Start by understanding the current project context, then ask questions one at a 
 - Ask after each section whether it looks right so far
 - Cover: architecture, components, data flow, error handling, testing
 - Be ready to go back and clarify if something doesn't make sense
+- After design lock, run mandatory hardening research pass via `superpowers:research-before-planning` before handing off to planning
 
 ## After the Design
 
@@ -42,7 +45,7 @@ Start by understanding the current project context, then ask questions one at a 
 **Implementation (if continuing):**
 - Ask: "Ready to set up for implementation?"
 - Use superpowers:using-git-worktrees to create isolated workspace
-- Use superpowers:writing-plans to create detailed implementation plan
+- Use superpowers:writing-plans to create detailed implementation plan (only after hardening research is complete)
 
 ## Key Principles
 
@@ -50,5 +53,6 @@ Start by understanding the current project context, then ask questions one at a 
 - **Multiple choice preferred** - Easier to answer than open-ended when possible
 - **YAGNI ruthlessly** - Remove unnecessary features from all designs
 - **Explore alternatives** - Always propose 2-3 approaches before settling
+- **Research and brainstorming are a loop** - Research answers decision questions; brainstorming uses those answers
 - **Incremental validation** - Present design in sections, validate each
 - **Be flexible** - Go back and clarify when something doesn't make sense

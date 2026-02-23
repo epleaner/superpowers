@@ -17,6 +17,16 @@ Assume they are a skilled developer, but know almost nothing about our toolset o
 
 **Save plans to:** `docs/plans/YYYY-MM-DD-<feature-name>.md`
 
+## Required Inputs Before Planning
+
+Before writing the implementation plan, verify:
+
+- Design is locked from `superpowers:brainstorming`
+- Paired research doc exists: `docs/plans/YYYY-MM-DD-<feature-name>-research.md`
+- Mandatory hardening research pass is complete (from `superpowers:research-before-planning`)
+
+If any of these are missing, stop and run `superpowers:research-before-planning`.
+
 ## Sprint Planning Requirements
 
 When the user asks for a project plan (sprints/tasks/tickets), enforce these rules:
@@ -121,10 +131,14 @@ git commit -m "feat: add specific feature"
 - DRY, YAGNI, TDD, frequent commits
 - If tests are not appropriate for a ticket, provide explicit validation steps and expected outcomes
 - Each sprint must be demoable and build on previous sprints
+- Before presenting a plan as final, **REQUIRED SUB-SKILL:** run `superpowers:plan-annotation-cycle`
+- Do not hand off to execution with any unresolved `>>` inline notes
 
 ## Execution Handoff
 
-After saving the plan, offer execution choice:
+After saving the plan, resolve all inline `>>` notes via `superpowers:plan-annotation-cycle`.
+
+Only when zero `>>` notes remain, offer execution choice:
 
 **"Plan complete and saved to `docs/plans/<filename>.md`. Two execution options:**
 
@@ -142,3 +156,10 @@ After saving the plan, offer execution choice:
 **If Parallel Session chosen:**
 - Guide them to open new session in worktree
 - **REQUIRED SUB-SKILL:** New session uses superpowers:executing-plans
+
+## Integration
+
+**Required workflow skills:**
+- **superpowers:research-before-planning** - Required pre-planning (unknown resolution + hardening pass)
+- **superpowers:plan-annotation-cycle** - Required before execution handoff (must resolve all `>>`)
+- **superpowers:brainstorming** - Produces design and decision questions
