@@ -13,6 +13,8 @@ Write the test first. Watch it fail. Write minimal code to pass.
 
 **Violating the letter of the rules is violating the spirit of the rules.**
 
+This skill covers the testing and verification portions of the canonical Definition of Good Code in `AGENTS.md`.
+
 ## When to Use
 
 **Always:**
@@ -157,7 +159,7 @@ async function retryOperation<T>(
     onRetry?: (attempt: number) => void;
   }
 ): Promise<T> {
-  // YAGNI
+  // YAGNI (You Aren't Gonna Need It)
 }
 ```
 Over-engineered

@@ -37,6 +37,19 @@ BEFORE claiming any status or expressing satisfaction:
 Skip any step = lying, not verifying
 ```
 
+## Definition of Done Gate (from AGENTS.md)
+
+Before any completion claim, verify the applicable Definition of Good Code items with evidence:
+- Correctness: behavior works and required scenarios succeed
+- Confidence: fresh verification output proves the claim now
+- Problem fit: implementation matches requirements, not just passing tests
+- Error handling: unhappy paths are validated and predictable
+- Simplicity: no unnecessary abstraction or speculative code
+- Tests: coverage includes new/changed behavior and regressions
+- Documentation: changed behavior is documented
+- Future change: design preserves maintainability while keeping YAGNI (You Aren't Gonna Need It)
+- Relevant quality attributes: check applicable ilities (for example accessibility, security, reliability)
+
 ## Common Failures
 
 | Claim | Requires | Not Sufficient |

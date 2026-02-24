@@ -85,7 +85,7 @@ IF conflicts with your human partner's prior decisions:
 
 **your human partner's rule:** "External feedback - be skeptical, but check carefully"
 
-## YAGNI Check for "Professional" Features
+## YAGNI (You Aren't Gonna Need It) Check for "Professional" Features
 
 ```
 IF reviewer suggests "implementing properly":

@@ -7,7 +7,7 @@ description: Use when you have a spec or requirements for a multi-step task, bef
 
 ## Overview
 
-Write comprehensive implementation plans assuming the engineer has zero context for our codebase and questionable taste. Document everything they need to know: which files to touch for each task, code, testing, docs they might need to check, how to test it. Give them the whole plan as bite-sized tasks. DRY. YAGNI. TDD. Frequent commits.
+Write comprehensive implementation plans assuming the engineer has zero context for our codebase and questionable taste. Document everything they need to know: which files to touch for each task, code, testing, docs they might need to check, how to test it. Give them the whole plan as bite-sized tasks. DRY. YAGNI (You Aren't Gonna Need It). TDD. Frequent commits.
 
 Assume they are a skilled developer, but know almost nothing about our toolset or problem domain. Assume they don't know good test design very well.
 
@@ -40,6 +40,7 @@ When the user asks for a project plan (sprints/tasks/tickets), enforce these rul
   - clear technical objective and scope boundary
   - explicit dependencies (or "none")
   - acceptance criteria
+  - Definition of Good Code mapping to applicable AGENTS.md criteria (for example correctness, tests, docs, error handling, relevant quality attributes)
   - required automated tests; if tests do not fit, an explicit alternative validation method with commands/checks and expected outcomes
 - Finish by reviewing and tightening the markdown plan before presenting it. Remove ambiguity, resolve internal inconsistencies, and ensure execution readiness.
 
