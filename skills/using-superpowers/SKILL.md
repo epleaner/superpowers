@@ -59,13 +59,14 @@ When a plan document is created or revised (`writing-plans`), you MUST enforce a
 
 Required sequence:
 1. Save first full draft.
-2. Ask the user to annotate the plan with inline `>>` comments.
-3. Wait for annotations (or explicit user opt-out).
-4. Run `plan-annotation-cycle`.
-5. Re-scan and repeat until zero `>>` lines remain.
+2. Open the plan file in Zed immediately after the first write.
+3. Ask the user to annotate the plan with inline `>>` comments.
+4. Wait for annotations (or explicit user opt-out).
+5. Run `plan-annotation-cycle`.
+6. Re-scan and repeat until zero `>>` lines remain.
 
 Rules:
-- You MUST NOT present a plan as final before step 4.
+- You MUST NOT present a plan as final before step 5.
 - You MUST NOT hand off to execution while any `>>` lines remain.
 - If the user opts out of annotation, you MAY proceed directly to `plan-annotation-cycle` scan/clean verification.
 

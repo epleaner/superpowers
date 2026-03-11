@@ -133,30 +133,30 @@ git commit -m "feat: add specific feature"
 - If tests are not appropriate for a ticket, provide explicit validation steps and expected outcomes
 - Each sprint must be demoable and build on previous sprints
 - Before presenting a plan as final, **REQUIRED SUB-SKILL:** run `superpowers:plan-annotation-cycle`
-- Do not hand off to execution with any unresolved `>>` inline notes
+- Do not hand off to execution with any unresolved `<<>>` inline notes
 
 ## Required Human Annotation Loop
 
 After writing the first complete draft and saving it:
 
 1. Present it explicitly as a **draft**, not final.
-2. Ask the user to annotate directly in the plan with `>>` comments.
+2. Ask the user to annotate directly in the plan with `<<>>` comments.
 3. Wait for user annotations (or explicit opt-out).
-4. Run `superpowers:plan-annotation-cycle` to resolve all `>>` notes.
-5. Re-run scan until zero `>>` notes remain.
+4. Run `superpowers:plan-annotation-cycle` to resolve all `<<>>` notes.
+5. Re-run scan until zero `<<>>` notes remain.
 
 You MUST NOT offer execution handoff before step 4 is complete.
 
 ## Execution Handoff
 
-After saving the first draft, request user `>>` annotations.
-After user annotations are provided (or the user explicitly opts out), resolve all inline `>>` notes via `superpowers:plan-annotation-cycle`.
+After saving the first draft, request user `<<>>` annotations.
+After user annotations are provided (or the user explicitly opts out), resolve all inline `<<>>` notes via `superpowers:plan-annotation-cycle`.
 
-Only when zero `>>` notes remain, offer execution choice.
+Only when zero `<<>>` notes remain, offer execution choice.
 
 Required draft prompt before annotation cycle:
 
-**"Draft plan saved to `docs/plans/<filename>.md`. Add any inline feedback using `>>` comments directly in the file, then tell me when to resolve them."**
+**"Draft plan saved to `docs/plans/<filename>.md`. Add any inline feedback using `<<>>` comments directly in the file, then tell me when to resolve them."**
 
 Final handoff prompt (after annotation cycle is clean):
 
@@ -181,5 +181,5 @@ Final handoff prompt (after annotation cycle is clean):
 
 **Required workflow skills:**
 - **superpowers:research-before-planning** - Required pre-planning (unknown resolution + hardening pass)
-- **superpowers:plan-annotation-cycle** - Required before execution handoff (must resolve all `>>`)
+- **superpowers:plan-annotation-cycle** - Required before execution handoff (must resolve all `<<>>`)
 - **superpowers:brainstorming** - Produces design and decision questions
