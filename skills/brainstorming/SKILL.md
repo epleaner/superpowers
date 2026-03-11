@@ -62,11 +62,13 @@ digraph brainstorming {
 - Prefer multiple choice questions when possible, but open-ended is fine too
 - Only one question per message - if a topic needs more exploration, break it into multiple questions
 - Focus on understanding: purpose, constraints, success criteria
+- When unknowns that can change design appear, **REQUIRED SUB-SKILL:** use `superpowers:research-before-planning`
 
 **Exploring approaches:**
 - Propose 2-3 different approaches with trade-offs
 - Present options conversationally with your recommendation and reasoning
 - Lead with your recommended option and explain why
+- Use research loops in tandem with brainstorming: question -> research update -> decision
 
 **Presenting the design:**
 - Once you believe you understand what you're building, present the design
@@ -74,6 +76,7 @@ digraph brainstorming {
 - Ask after each section whether it looks right so far
 - Cover: architecture, components, data flow, error handling, testing
 - Be ready to go back and clarify if something doesn't make sense
+- After design lock, run mandatory hardening research pass via `superpowers:research-before-planning` before handing off to planning
 
 ## After the Design
 
@@ -83,14 +86,15 @@ digraph brainstorming {
 - Commit the design document to git
 
 **Implementation:**
-- Invoke the writing-plans skill to create a detailed implementation plan
+- Invoke the writing-plans skill to create a detailed implementation plan (only after hardening research is complete)
 - Do NOT invoke any other skill. writing-plans is the next step.
 
 ## Key Principles
 
 - **One question at a time** - Don't overwhelm with multiple questions
 - **Multiple choice preferred** - Easier to answer than open-ended when possible
-- **YAGNI ruthlessly** - Remove unnecessary features from all designs
+- **YAGNI (You Aren't Gonna Need It) ruthlessly** - Remove unnecessary features from all designs
 - **Explore alternatives** - Always propose 2-3 approaches before settling
+- **Research and brainstorming are a loop** - Research answers decision questions; brainstorming uses those answers
 - **Incremental validation** - Present design, get approval before moving on
 - **Be flexible** - Go back and clarify when something doesn't make sense

@@ -5,9 +5,9 @@ description: Use when executing implementation plans with independent tasks in t
 
 # Subagent-Driven Development
 
-Execute plan by dispatching fresh subagent per task, with two-stage review after each: spec compliance review first, then code quality review.
+Execute plan by dispatching fresh subagents with two-stage review after each implementation unit: spec compliance review first, then code quality review.
 
-**Core principle:** Fresh subagent per task + two-stage review (spec then quality) = high quality, fast iteration
+**Core principle:** Use `sprint-orchestrator` for sprint-scoped or other top-level grouped work, then let it delegate grouped parent work to `task-orchestrator`. Use `task-orchestrator` for parent tasks that already contain child subitems. Leaf implementation units still use the same two-stage review loop (spec then quality).
 
 ## When to Use
 
@@ -37,12 +37,35 @@ digraph when_to_use {
 
 ## The Process
 
+If `>>` notes appear or are discovered while executing tasks:
+- Refresh the plan via `superpowers:writing-plans` and/or `superpowers:plan-annotation-cycle`
+- Continue execution once the relevant plan section is updated
+
+Sprint-scoped or other top-level grouped work SHOULD dispatch `sprint-orchestrator`. Grouped parent tasks with child subitems SHOULD dispatch `task-orchestrator`, even when child execution is sequential. The controller SHOULD expect synthesized results from these orchestrators instead of micromanaging each lower-level step directly.
+
 ```dot
 digraph process {
     rankdir=TB;
 
-    subgraph cluster_per_task {
-        label="Per Task";
+    subgraph cluster_sprint_task {
+        label="Top-Level Grouped Work";
+        "Dispatch sprint-orchestrator subagent" [shape=box];
+        "sprint-orchestrator preserves grouping or clusters into workstreams" [shape=box];
+        "sprint-orchestrator dispatches task-orchestrator subagents" [shape=box];
+        "sprint-orchestrator may dispatch lone trivial leaf work directly" [shape=box];
+        "sprint-orchestrator synthesizes top-level result" [shape=box];
+    }
+
+    subgraph cluster_parent_task {
+        label="Parent Task With Child Subitems";
+        "Dispatch task-orchestrator subagent" [shape=box];
+        "task-orchestrator decides sequential vs parallel child execution" [shape=box];
+        "task-orchestrator dispatches implementer/reviewer child subagents" [shape=box];
+        "task-orchestrator synthesizes parent result" [shape=box];
+    }
+
+    subgraph cluster_leaf_task {
+        label="Leaf Implementation Unit";
         "Dispatch implementer subagent (./implementer-prompt.md)" [shape=box];
         "Implementer subagent asks questions?" [shape=diamond];
         "Answer questions, provide context" [shape=box];
@@ -57,11 +80,28 @@ digraph process {
     }
 
     "Read plan, extract all tasks with full text, note context, create TodoWrite" [shape=box];
+    "Task is sprint/top-level grouped?" [shape=diamond];
+    "Task has child subitems?" [shape=diamond];
     "More tasks remain?" [shape=diamond];
     "Dispatch final code reviewer subagent for entire implementation" [shape=box];
     "Use superpowers:finishing-a-development-branch" [shape=box style=filled fillcolor=lightgreen];
 
-    "Read plan, extract all tasks with full text, note context, create TodoWrite" -> "Dispatch implementer subagent (./implementer-prompt.md)";
+    "Read plan, extract all tasks with full text, note context, create TodoWrite" -> "Task is sprint/top-level grouped?";
+    "Task is sprint/top-level grouped?" -> "Dispatch sprint-orchestrator subagent" [label="yes"];
+    "Dispatch sprint-orchestrator subagent" -> "sprint-orchestrator preserves grouping or clusters into workstreams";
+    "sprint-orchestrator preserves grouping or clusters into workstreams" -> "sprint-orchestrator dispatches task-orchestrator subagents";
+    "sprint-orchestrator dispatches task-orchestrator subagents" -> "sprint-orchestrator may dispatch lone trivial leaf work directly";
+    "sprint-orchestrator may dispatch lone trivial leaf work directly" -> "sprint-orchestrator synthesizes top-level result";
+    "sprint-orchestrator synthesizes top-level result" -> "More tasks remain?";
+
+    "Task is sprint/top-level grouped?" -> "Task has child subitems?" [label="no"];
+    "Task has child subitems?" -> "Dispatch task-orchestrator subagent" [label="yes"];
+    "Dispatch task-orchestrator subagent" -> "task-orchestrator decides sequential vs parallel child execution";
+    "task-orchestrator decides sequential vs parallel child execution" -> "task-orchestrator dispatches implementer/reviewer child subagents";
+    "task-orchestrator dispatches implementer/reviewer child subagents" -> "task-orchestrator synthesizes parent result";
+    "task-orchestrator synthesizes parent result" -> "More tasks remain?";
+
+    "Task has child subitems?" -> "Dispatch implementer subagent (./implementer-prompt.md)" [label="no"];
     "Dispatch implementer subagent (./implementer-prompt.md)" -> "Implementer subagent asks questions?";
     "Implementer subagent asks questions?" -> "Answer questions, provide context" [label="yes"];
     "Answer questions, provide context" -> "Dispatch implementer subagent (./implementer-prompt.md)";
@@ -76,7 +116,7 @@ digraph process {
     "Implementer subagent fixes quality issues" -> "Dispatch code quality reviewer subagent (./code-quality-reviewer-prompt.md)" [label="re-review"];
     "Code quality reviewer subagent approves?" -> "Mark task complete in TodoWrite" [label="yes"];
     "Mark task complete in TodoWrite" -> "More tasks remain?";
-    "More tasks remain?" -> "Dispatch implementer subagent (./implementer-prompt.md)" [label="yes"];
+    "More tasks remain?" -> "Task has child subitems?" [label="yes"];
     "More tasks remain?" -> "Dispatch final code reviewer subagent for entire implementation" [label="no"];
     "Dispatch final code reviewer subagent for entire implementation" -> "Use superpowers:finishing-a-development-branch";
 }
@@ -97,9 +137,31 @@ You: I'm using Subagent-Driven Development to execute this plan.
 [Extract all 5 tasks with full text and context]
 [Create TodoWrite with all tasks]
 
-Task 1: Hook installation script
+Task 1: Sprint or other top-level grouped work
 
-[Get Task 1 text and context (already extracted)]
+[Get sprint/workstream text and grouped tasks (already extracted)]
+[Dispatch sprint-orchestrator with full sprint text + grouped tasks + context]
+
+sprint-orchestrator:
+  - preserves explicit grouping when present
+  - clusters into workstreams only if the plan is under-grouped
+  - dispatches task-orchestrator for grouped parent work
+  - may dispatch a lone trivial leaf task directly when that is the sensible exception
+  - returns a synthesized top-level result
+
+Task 2: Parent task with child subitems
+
+[Get parent task text and child subitems (already extracted)]
+[Dispatch task-orchestrator with full parent-task text + child subitems + context]
+
+task-orchestrator:
+  - determines child task ordering
+  - dispatches leaf implementer/reviewer subagents sequentially or in parallel as needed
+  - returns a synthesized parent-task result
+
+Task 3: Hook installation script
+
+[Get Task 2 text and context (already extracted)]
 [Dispatch implementation subagent with full task text + context]
 
 Implementer: "Before I begin - should the hook be installed at user or system level?"
@@ -200,9 +262,11 @@ Done!
 
 **Never:**
 - Start implementation on main/master branch without explicit user consent
+- Let subagents create or switch branches (`git checkout`, `git switch`, `git branch`) unless explicitly requested by the user
 - Skip reviews (spec compliance OR code quality)
 - Proceed with unfixed issues
-- Dispatch multiple implementation subagents in parallel (conflicts)
+- Dispatch multiple implementation subagents in parallel from the controller for a single parent task; use `task-orchestrator` to own grouped child work
+- Flatten sprint/top-level grouped work directly from the controller when `sprint-orchestrator` should own it
 - Make subagent read plan file (provide full text instead)
 - Skip scene-setting context (subagent needs to understand where task fits)
 - Ignore subagent questions (answer before letting them proceed)
@@ -226,6 +290,12 @@ Done!
 **If subagent fails task:**
 - Dispatch fix subagent with specific instructions
 - Don't try to fix manually (context pollution)
+
+## Branch Discipline
+
+- Subagents must stay on the controller's current branch.
+- Controller prompt should include: `Current branch: <branch-name>` and `Do not create/switch branches`.
+- Any subagent that changes branch is out-of-spec; stop and return to the intended branch before continuing.
 
 ## Integration
 

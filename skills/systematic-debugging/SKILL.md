@@ -13,6 +13,8 @@ Random fixes waste time and create new bugs. Quick patches mask underlying issue
 
 **Violating the letter of this process is violating the spirit of debugging.**
 
+This skill supports the correctness and error-handling portions of the canonical Definition of Good Code in `AGENTS.md`.
+
 ## The Iron Law
 
 ```

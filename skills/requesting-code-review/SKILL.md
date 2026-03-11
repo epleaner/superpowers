@@ -46,6 +46,19 @@ Use Task tool with superpowers:code-reviewer type, fill template at `code-review
 - Note Minor issues for later
 - Push back if reviewer is wrong (with reasoning)
 
+## Definition of Good Code Rubric (Required)
+
+Use the canonical Definition of Good Code in `AGENTS.md` as the review rubric.
+
+For each review request, require explicit checks for applicable items:
+- Code works and solves the intended problem
+- Evidence proves it works now (tests/validation output)
+- Error handling is predictable and informative
+- Implementation is minimal and maintainable (YAGNI: You Aren't Gonna Need It)
+- Tests protect changed behavior and regressions
+- Documentation is updated where behavior changed
+- Relevant quality attributes are covered (for example accessibility, security, reliability)
+
 ## Example
 
 ```
