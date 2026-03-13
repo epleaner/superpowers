@@ -5,13 +5,13 @@ description: Use when executing implementation plans with independent tasks in t
 
 # Subagent-Driven Development
 
-Execute plan by dispatching fresh subagents with two-stage review after each implementation unit: spec compliance review first, then code quality review.
+Execute the plan in this session by spawning focused subagents with `Agent`, then running two reviews after each implementation unit: spec compliance first, code quality second.
 
-**Core principle:** Use `sprint-orchestrator` for sprint-scoped or other top-level grouped work, then let it delegate grouped parent work to `task-orchestrator`. Use `task-orchestrator` for parent tasks that already contain child subitems. Leaf implementation units still use the same two-stage review loop (spec then quality).
+**Core principle:** The controller owns decomposition, task order, and progress tracking. Subagents own narrow execution units with isolated context.
 
-**Literal invocation rule:** The `agent` field MUST name the real subagent to run. `kind` is display metadata only. For orchestrator work, invoke `agent: "sprint-orchestrator"` or `agent: "task-orchestrator"` directly. You MUST NOT invoke `agent: "worker"` and rely on `kind` to impersonate an orchestrator.
+**Tooling rule:** You MUST use the installed `pi-subagents` tools: `Agent`, `get_subagent_result`, and `steer_subagent`.
 
-**Multi-sprint execution contract:** When the plan contains multiple sprints or other top-level grouped phases, the controller MUST execute those top-level groups sequentially unless the plan explicitly authorizes parallel top-level execution. Each top-level group MUST be owned by `sprint-orchestrator`. Within each sprint, grouped tickets/tasks MUST be owned by `task-orchestrator`. Within each grouped ticket/task, concrete subitems MUST be delegated to leaf subagents. Results MUST bubble upward as synthesized/verified summaries so the main controller keeps only plan state, task tracking, blockers, and synthesized outcomes rather than raw child transcripts.
+**Schema rule:** You MUST call `Agent` with `subagent_type`, `prompt`, and `description`. You MUST NOT write instructions for the legacy `subagent` tool or its old `agent`/`kind`/`label` payload shape.
 
 ## When to Use
 
@@ -29,351 +29,203 @@ digraph when_to_use {
     "Tasks mostly independent?" -> "Stay in this session?" [label="yes"];
     "Tasks mostly independent?" -> "Manual execution or brainstorm first" [label="no - tightly coupled"];
     "Stay in this session?" -> "subagent-driven-development" [label="yes"];
-    "Stay in this session?" -> "executing-plans" [label="no - parallel session"];
+    "Stay in this session?" -> "executing-plans" [label="no - separate session"];
 }
 ```
 
-**vs. Executing Plans (parallel session):**
-- Same session (no context switch)
-- Fresh subagent per task (no context pollution)
-- Two-stage review after each task: spec compliance first, then code quality
-- Faster iteration (no human-in-loop between tasks)
+Use this when:
+- the plan already exists
+- tasks can be decomposed into narrow execution units
+- you want continuous iteration in the current session
+- you want review after each task, not only at the end
+
+Use `superpowers:executing-plans` instead when:
+- execution should happen in a separate session
+- you want batch checkpoints instead of per-task steering
+- the plan is large enough that isolating execution context in another session is cleaner
+
+## Agent Types
+
+Default choices:
+- `general-purpose` — implementation, fixes, and reviews unless the repo provides a better custom type
+- `Explore` — read-only reconnaissance
+- `Plan` — read-only design or plan refinement
+
+Project-local custom agent types MAY exist in `.pi/agents/*.md`. Prefer them only when they clearly fit the work better than the built-ins.
 
 ## The Process
 
-If `>>` notes appear or are discovered while executing tasks:
-- Refresh the plan via `superpowers:writing-plans` and/or `superpowers:plan-annotation-cycle`
-- Continue execution once the relevant plan section is updated
+If `>>` notes appear or are discovered while executing:
+- refresh the plan via `superpowers:writing-plans` and/or `superpowers:plan-annotation-cycle`
+- resume execution only after the relevant plan section is updated
 
-Sprint-scoped or other top-level grouped work SHOULD dispatch `sprint-orchestrator`. Grouped parent tasks with child subitems SHOULD dispatch `task-orchestrator`, even when child execution is sequential. The controller SHOULD expect synthesized results from these orchestrators instead of micromanaging each lower-level step directly.
+### 1. Controller prep
+- Read the plan once.
+- Extract each task's full text and required context.
+- Create TodoWrite entries.
+- Keep the controller thread focused on status, blockers, synthesized outcomes, and verification results.
+- Do NOT make subagents read the plan file unless that is the task under test.
 
-Execution hierarchy for multi-sprint plans:
-- controller MUST process top-level sprints/groups sequentially unless the plan explicitly says otherwise
-- controller MUST dispatch `sprint-orchestrator` for each sprint/top-level group
-- `sprint-orchestrator` MUST dispatch `task-orchestrator` for grouped tickets/tasks
-- `task-orchestrator` MUST dispatch leaf subagents for concrete subitems
-- `task-orchestrator` MUST NOT dispatch another `task-orchestrator` for the same ticket/work item
-- `task-orchestrator` MAY dispatch a child `task-orchestrator` only for an explicitly distinct subgroup/workstream that already exists in the provided work and uses a distinct label
-- synthesized/verified results SHOULD move upward one level at a time; raw child transcripts SHOULD NOT be retained in the controller unless a blocker or review requires them
+### 2. Decompose grouped work yourself
+- Process top-level sprints or other grouped phases sequentially unless the plan explicitly allows top-level parallelism.
+- Break grouped parent work into leaf execution units before dispatch.
+- Use background `Agent` calls only for truly independent leaf tasks.
+- Keep raw child transcripts out of the main thread unless a blocker or review requires quoting them.
 
-Use literal tool payloads that select the real orchestrator agent:
+### 3. Dispatch the implementer
+Use `Agent` for each concrete execution unit.
 
-```json
-{
-  "agent": "sprint-orchestrator",
-  "kind": "sprint-orchestrator",
-  "label": "Sprint A",
-  "task": "Execute Sprint A using the provided grouped plan."
-}
-```
+Foreground example:
 
 ```json
 {
-  "agent": "task-orchestrator",
-  "kind": "task-orchestrator",
-  "label": "Task 2.1",
-  "parentLabel": "Sprint A",
-  "task": "Execute Task 2.1 using the provided child subtasks."
+  "subagent_type": "general-purpose",
+  "description": "Implement retry banner",
+  "prompt": "Implement Ticket 2.1 from the provided plan excerpt. Current branch: ep/retry-banner. Do not create or switch branches. Follow TDD. Run the required verification commands. Return a concise summary of changes, verification, and any open questions.\n\n[insert task text and context here]"
 }
 ```
 
-Bad pattern — do not do this:
+Background example for independent work:
 
 ```json
 {
-  "agent": "worker",
-  "kind": "task-orchestrator",
-  "task": "..."
+  "subagent_type": "general-purpose",
+  "description": "Implement parser cleanup",
+  "prompt": "Implement the provided leaf task. Current branch: ep/parser-cleanup. Do not create or switch branches. Return summary + verification.\n\n[insert task text and context here]",
+  "run_in_background": true
 }
 ```
 
-Multi-sprint example shape:
+### 4. Handle questions and drift
+- If a subagent asks a question or starts drifting, answer with `steer_subagent`.
+- Keep steering specific: unblock the exact ambiguity, then tell the agent to continue.
+- Do NOT abandon a good subagent run just because clarification was needed.
 
-```text
-controller
-  -> sprint-orchestrator (Sprint 1)
-    -> task-orchestrator (Ticket 1)
-      -> leaf subagents (subitems)
-    -> task-orchestrator (Ticket 2)
-      -> leaf subagents (subitems)
-  -> sprint-orchestrator (Sprint 2)
-    -> task-orchestrator (Ticket 3)
-      -> leaf subagents (subitems)
-```
+Example:
 
-This ordering is intentional: finish Sprint 1 synthesis/review before moving the controller to Sprint 2 unless the plan explicitly allows top-level parallelism.
-
-```dot
-digraph process {
-    rankdir=TB;
-
-    subgraph cluster_sprint_task {
-        label="Top-Level Grouped Work";
-        "Dispatch sprint-orchestrator subagent" [shape=box];
-        "sprint-orchestrator preserves grouping or clusters into workstreams" [shape=box];
-        "sprint-orchestrator dispatches task-orchestrator subagents" [shape=box];
-        "sprint-orchestrator may dispatch lone trivial leaf work directly" [shape=box];
-        "sprint-orchestrator synthesizes top-level result" [shape=box];
-    }
-
-    subgraph cluster_parent_task {
-        label="Parent Task With Child Subitems";
-        "Dispatch task-orchestrator subagent" [shape=box];
-        "task-orchestrator decides sequential vs parallel child execution" [shape=box];
-        "task-orchestrator dispatches implementer/reviewer child subagents" [shape=box];
-        "task-orchestrator synthesizes parent result" [shape=box];
-    }
-
-    subgraph cluster_leaf_task {
-        label="Leaf Implementation Unit";
-        "Dispatch implementer subagent (./implementer-prompt.md)" [shape=box];
-        "Implementer subagent asks questions?" [shape=diamond];
-        "Answer questions, provide context" [shape=box];
-        "Implementer subagent implements, tests, commits, self-reviews" [shape=box];
-        "Dispatch spec reviewer subagent (./spec-reviewer-prompt.md)" [shape=box];
-        "Spec reviewer subagent confirms code matches spec?" [shape=diamond];
-        "Implementer subagent fixes spec gaps" [shape=box];
-        "Dispatch code quality reviewer subagent (./code-quality-reviewer-prompt.md)" [shape=box];
-        "Code quality reviewer subagent approves?" [shape=diamond];
-        "Implementer subagent fixes quality issues" [shape=box];
-        "Mark task complete in TodoWrite" [shape=box];
-    }
-
-    "Read plan, extract all tasks with full text, note context, create TodoWrite" [shape=box];
-    "Task is sprint/top-level grouped?" [shape=diamond];
-    "Task has child subitems?" [shape=diamond];
-    "More tasks remain?" [shape=diamond];
-    "Dispatch final code reviewer subagent for entire implementation" [shape=box];
-    "Use superpowers:finishing-a-development-branch" [shape=box style=filled fillcolor=lightgreen];
-
-    "Read plan, extract all tasks with full text, note context, create TodoWrite" -> "Task is sprint/top-level grouped?";
-    "Task is sprint/top-level grouped?" -> "Dispatch sprint-orchestrator subagent" [label="yes"];
-    "Dispatch sprint-orchestrator subagent" -> "sprint-orchestrator preserves grouping or clusters into workstreams";
-    "sprint-orchestrator preserves grouping or clusters into workstreams" -> "sprint-orchestrator dispatches task-orchestrator subagents";
-    "sprint-orchestrator dispatches task-orchestrator subagents" -> "sprint-orchestrator may dispatch lone trivial leaf work directly";
-    "sprint-orchestrator may dispatch lone trivial leaf work directly" -> "sprint-orchestrator synthesizes top-level result";
-    "sprint-orchestrator synthesizes top-level result" -> "More tasks remain?";
-
-    "Task is sprint/top-level grouped?" -> "Task has child subitems?" [label="no"];
-    "Task has child subitems?" -> "Dispatch task-orchestrator subagent" [label="yes"];
-    "Dispatch task-orchestrator subagent" -> "task-orchestrator decides sequential vs parallel child execution";
-    "task-orchestrator decides sequential vs parallel child execution" -> "task-orchestrator dispatches implementer/reviewer child subagents";
-    "task-orchestrator dispatches implementer/reviewer child subagents" -> "task-orchestrator synthesizes parent result";
-    "task-orchestrator synthesizes parent result" -> "More tasks remain?";
-
-    "Task has child subitems?" -> "Dispatch implementer subagent (./implementer-prompt.md)" [label="no"];
-    "Dispatch implementer subagent (./implementer-prompt.md)" -> "Implementer subagent asks questions?";
-    "Implementer subagent asks questions?" -> "Answer questions, provide context" [label="yes"];
-    "Answer questions, provide context" -> "Dispatch implementer subagent (./implementer-prompt.md)";
-    "Implementer subagent asks questions?" -> "Implementer subagent implements, tests, commits, self-reviews" [label="no"];
-    "Implementer subagent implements, tests, commits, self-reviews" -> "Dispatch spec reviewer subagent (./spec-reviewer-prompt.md)";
-    "Dispatch spec reviewer subagent (./spec-reviewer-prompt.md)" -> "Spec reviewer subagent confirms code matches spec?";
-    "Spec reviewer subagent confirms code matches spec?" -> "Implementer subagent fixes spec gaps" [label="no"];
-    "Implementer subagent fixes spec gaps" -> "Dispatch spec reviewer subagent (./spec-reviewer-prompt.md)" [label="re-review"];
-    "Spec reviewer subagent confirms code matches spec?" -> "Dispatch code quality reviewer subagent (./code-quality-reviewer-prompt.md)" [label="yes"];
-    "Dispatch code quality reviewer subagent (./code-quality-reviewer-prompt.md)" -> "Code quality reviewer subagent approves?";
-    "Code quality reviewer subagent approves?" -> "Implementer subagent fixes quality issues" [label="no"];
-    "Implementer subagent fixes quality issues" -> "Dispatch code quality reviewer subagent (./code-quality-reviewer-prompt.md)" [label="re-review"];
-    "Code quality reviewer subagent approves?" -> "Mark task complete in TodoWrite" [label="yes"];
-    "Mark task complete in TodoWrite" -> "More tasks remain?";
-    "More tasks remain?" -> "Task has child subitems?" [label="yes"];
-    "More tasks remain?" -> "Dispatch final code reviewer subagent for entire implementation" [label="no"];
-    "Dispatch final code reviewer subagent for entire implementation" -> "Use superpowers:finishing-a-development-branch";
+```json
+{
+  "agent_id": "agent_123",
+  "message": "Use the user-level install path only. Keep the existing CLI shape. Continue from your current branch state."
 }
 ```
 
-## Prompt Templates
+### 5. Collect background results
+- Use `get_subagent_result` for background agents.
+- Wait when needed; do not guess completion.
+- Synthesize the result into the controller thread before moving on.
 
-- `./implementer-prompt.md` - Dispatch implementer subagent
-- `./spec-reviewer-prompt.md` - Dispatch spec compliance reviewer subagent
-- `./code-quality-reviewer-prompt.md` - Dispatch code quality reviewer subagent
+Example:
+
+```json
+{
+  "agent_id": "agent_123",
+  "wait": true
+}
+```
+
+### 6. Run the two review loops
+After implementation completes:
+1. Dispatch a spec-compliance review agent.
+2. If it finds issues, send the fixes back to the implementer and re-review.
+3. Only after spec compliance is clean, dispatch a code-quality review agent.
+4. If it finds issues, send the fixes back to the implementer and re-review.
+5. Mark the task done only when both reviews are clean.
+
+Review example:
+
+```json
+{
+  "subagent_type": "general-purpose",
+  "description": "Review retry banner for spec compliance",
+  "prompt": "Review the completed Ticket 2.1 implementation for spec compliance only. Do not propose style cleanups unless they violate the spec. Return: pass/fail, exact gaps, and file-path evidence.\n\nRequirements:\n[insert task requirements]\n\nImplementation summary:\n[insert implementer summary]"
+}
+```
+
+Then:
+
+```json
+{
+  "subagent_type": "general-purpose",
+  "description": "Review retry banner for code quality",
+  "prompt": "Review the completed Ticket 2.1 implementation for code quality only. Check correctness evidence, maintainability, simplicity, tests, and docs. Return strengths, issues by severity, and exact file-path evidence.\n\nRequirements:\n[insert task requirements]\n\nImplementation summary:\n[insert implementer summary]"
+}
+```
+
+### 7. Finish the session
+After all tasks are complete and verified:
+- use `superpowers:finishing-a-development-branch`
 
 ## Example Workflow
 
-```
+```text
 You: I'm using Subagent-Driven Development to execute this plan.
 
-[Read plan file once: docs/plans/feature-plan.md]
-[Extract all 5 tasks with full text and context]
-[Create TodoWrite with all tasks]
+[Read plan once]
+[Extract task text and context]
+[Create TodoWrite]
 
-Task 1: Sprint or other top-level grouped work
+Task 1: implement retry banner
+- Dispatch Agent(general-purpose) with the exact task text
+- Agent asks one clarifying question
+- Answer via steer_subagent
+- Collect final result
+- Dispatch spec review Agent
+- Implementer fixes one spec gap
+- Re-run spec review
+- Dispatch code-quality review Agent
+- Implementer fixes one maintainability issue
+- Re-run code-quality review
+- Mark task complete
 
-[Get sprint/workstream text and grouped tasks (already extracted)]
-[Dispatch sprint-orchestrator with full sprint text + grouped tasks + context]
-
-sprint-orchestrator:
-  - preserves explicit grouping when present
-  - clusters into workstreams only if the plan is under-grouped
-  - dispatches task-orchestrator for grouped parent work
-  - may dispatch a lone trivial leaf task directly when that is the sensible exception
-  - returns a synthesized top-level result
-
-Task 2: Parent task with child subitems
-
-[Get parent task text and child subitems (already extracted)]
-[Dispatch task-orchestrator with full parent-task text + child subitems + context]
-
-task-orchestrator:
-  - determines child task ordering
-  - dispatches only leaf implementer/reviewer subagents for normal concrete work
-  - does not recurse into another task-orchestrator for the same ticket/work item
-  - may use a child task-orchestrator only for an explicitly distinct subgroup/workstream with a distinct label
-  - returns a synthesized parent-task result
-
-Task 3: Hook installation script
-
-[Get Task 2 text and context (already extracted)]
-[Dispatch implementation subagent with full task text + context]
-
-Implementer: "Before I begin - should the hook be installed at user or system level?"
-
-You: "User level (~/.config/superpowers/hooks/)"
-
-Implementer: "Got it. Implementing now..."
-[Later] Implementer:
-  - Implemented install-hook command
-  - Added tests, 5/5 passing
-  - Self-review: Found I missed --force flag, added it
-  - Committed
-
-[Dispatch spec compliance reviewer]
-Spec reviewer: ✅ Spec compliant - all requirements met, nothing extra
-
-[Get git SHAs, dispatch code quality reviewer]
-Code reviewer: Strengths: Good test coverage, clean. Issues: None. Approved.
-
-[Mark Task 1 complete]
-
-Task 2: Recovery modes
-
-[Get Task 2 text and context (already extracted)]
-[Dispatch implementation subagent with full task text + context]
-
-Implementer: [No questions, proceeds]
-Implementer:
-  - Added verify/repair modes
-  - 8/8 tests passing
-  - Self-review: All good
-  - Committed
-
-[Dispatch spec compliance reviewer]
-Spec reviewer: ❌ Issues:
-  - Missing: Progress reporting (spec says "report every 100 items")
-  - Extra: Added --json flag (not requested)
-
-[Implementer fixes issues]
-Implementer: Removed --json flag, added progress reporting
-
-[Spec reviewer reviews again]
-Spec reviewer: ✅ Spec compliant now
-
-[Dispatch code quality reviewer]
-Code reviewer: Strengths: Solid. Issues (Important): Magic number (100)
-
-[Implementer fixes]
-Implementer: Extracted PROGRESS_INTERVAL constant
-
-[Code reviewer reviews again]
-Code reviewer: ✅ Approved
-
-[Mark Task 2 complete]
-
-...
-
-[After all tasks]
-[Dispatch final code-reviewer]
-Final reviewer: All requirements met, ready to merge
-
-Done!
+Task 2: independent parser cleanup
+- Dispatch Agent(..., run_in_background=true)
+- Continue prepping the next task
+- Use get_subagent_result(wait=true) when ready
+- Run the same two review loops
 ```
 
 ## Advantages
 
-**vs. Manual execution:**
-- Subagents follow TDD naturally
-- Fresh context per task (no confusion)
-- Parallel-safe (subagents don't interfere)
-- Subagent can ask questions (before AND during work)
-
-**vs. Executing Plans:**
-- Same session (no handoff)
-- Continuous progress (no waiting)
-- Review checkpoints automatic
-
-**Efficiency gains:**
-- No file reading overhead (controller provides full text)
-- Controller curates exactly what context is needed
-- Subagent gets complete information upfront
-- Questions surfaced before work begins (not after)
-
-**Quality gates:**
-- Self-review catches issues before handoff
-- Two-stage review: spec compliance, then code quality
-- Review loops ensure fixes actually work
-- Spec compliance prevents over/under-building
-- Code quality ensures implementation is well-built
-
-**Cost:**
-- More subagent invocations (implementer + 2 reviewers per task)
-- Controller does more prep work (extracting all tasks upfront)
-- Review loops add iterations
-- But catches issues early (cheaper than debugging later)
+- Fresh context per task
+- Easy steering without losing the run
+- Optional background parallelism for independent tasks
+- Strong quality gates via explicit spec and quality review loops
+- Controller thread stays clean because it stores only synthesized state
 
 ## Red Flags
 
-**Never:**
-- Use `agent: "worker"` with `kind: "task-orchestrator"` or `kind: "sprint-orchestrator"`
-- Use `kind` as a substitute for choosing the correct `agent`
-- Start implementation on main/master branch without explicit user consent
-- Let subagents create or switch branches (`git checkout`, `git switch`, `git branch`) unless explicitly requested by the user
-- Skip reviews (spec compliance OR code quality)
-- Proceed with unfixed issues
-- Dispatch multiple implementation subagents in parallel from the controller for a single parent task; use `task-orchestrator` to own grouped child work
-- Flatten sprint/top-level grouped work directly from the controller when `sprint-orchestrator` should own it
-- Start Sprint N+1 before Sprint N has been synthesized and reviewed unless the plan explicitly authorizes top-level parallelism
-- Let `sprint-orchestrator` or `task-orchestrator` absorb concrete leaf subitem work when proper leaf delegation is available
-- Let `task-orchestrator` recursively spawn another `task-orchestrator` for the same ticket/work item or under the same effective label
-- Make subagent read plan file (provide full text instead)
-- Skip scene-setting context (subagent needs to understand where task fits)
-- Ignore subagent questions (answer before letting them proceed)
-- Accept "close enough" on spec compliance (spec reviewer found issues = not done)
-- Skip review loops (reviewer found issues = implementer fixes = review again)
-- Let implementer self-review replace actual review (both are needed)
-- **Start code quality review before spec compliance is ✅** (wrong order)
-- Move to next task while either review has open issues
+Never:
+- write legacy `subagent` payloads
+- use project-specific old agent names unless they actually exist in `.pi/agents/`
+- ask subagents to create or switch branches unless explicitly requested
+- skip spec review
+- start code-quality review before spec review is clean
+- move to the next task while either review has open issues
+- dispatch multiple background implementers against the same files or shared mutable state
+- make subagents reread the whole plan when you can provide the exact task excerpt
+- ignore subagent questions or drift signals
 
-**If subagent asks questions:**
-- Answer clearly and completely
-- Provide additional context if needed
-- Don't rush them into implementation
-
-**If reviewer finds issues:**
-- Implementer (same subagent) fixes them
-- Reviewer reviews again
-- Repeat until approved
-- Don't skip the re-review
-
-**If subagent fails task:**
-- Dispatch fix subagent with specific instructions
-- Don't try to fix manually (context pollution)
+If a subagent fails:
+- dispatch a new focused implementer with the failure context
+- do NOT patch manually in the controller unless the user explicitly wants manual execution
 
 ## Branch Discipline
 
-- Subagents must stay on the controller's current branch.
-- Controller prompt should include: `Current branch: <branch-name>` and `Do not create/switch branches`.
-- Any subagent that changes branch is out-of-spec; stop and return to the intended branch before continuing.
+- Subagents MUST stay on the controller's current branch.
+- Controller prompts SHOULD include: `Current branch: <branch-name>` and `Do not create or switch branches.`
+- Any subagent that changes branch is out of spec. Stop and recover before continuing.
 
 ## Integration
 
 **Required workflow skills:**
 - **superpowers:using-git-worktrees** - REQUIRED: Set up isolated workspace before starting
 - **superpowers:writing-plans** - Creates the plan this skill executes
-- **superpowers:requesting-code-review** - Code review template for reviewer subagents
+- **superpowers:requesting-code-review** - Review guidance for per-task reviewers
 - **superpowers:finishing-a-development-branch** - Complete development after all tasks
 
 **Subagents should use:**
-- **superpowers:test-driven-development** - Subagents follow TDD for each task
+- **superpowers:test-driven-development** - Implementation agents SHOULD follow TDD for each task
 
 **Alternative workflow:**
-- **superpowers:executing-plans** - Use for parallel session instead of same-session execution
+- **superpowers:executing-plans** - Use for a separate execution session instead of same-session execution

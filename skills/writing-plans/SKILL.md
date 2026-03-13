@@ -182,7 +182,7 @@ Final handoff prompt (after annotation cycle is clean):
 
 **"Plan complete and saved to `docs/plans/<filename>.md`. Two execution options:**
 
-**1. Subagent-Driven (this session)** - I dispatch fresh subagent per task, review between tasks, fast iteration
+**1. Subagent-Driven (this session)** - I use `Agent` / `steer_subagent` / `get_subagent_result` for focused task execution and review between tasks
 
 **2. Parallel Session (separate)** - Open new session with executing-plans, batch execution with checkpoints
 
@@ -191,7 +191,7 @@ Final handoff prompt (after annotation cycle is clean):
 **If Subagent-Driven chosen:**
 - **REQUIRED SUB-SKILL:** Use superpowers:subagent-driven-development
 - Stay in this session
-- Fresh subagent per task + code review
+- Focused `Agent` calls per task + code review
 
 **If Parallel Session chosen:**
 - Guide them to open new session in worktree
