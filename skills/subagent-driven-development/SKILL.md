@@ -9,6 +9,10 @@ Execute plan by dispatching fresh subagents with two-stage review after each imp
 
 **Core principle:** Use `sprint-orchestrator` for sprint-scoped or other top-level grouped work, then let it delegate grouped parent work to `task-orchestrator`. Use `task-orchestrator` for parent tasks that already contain child subitems. Leaf implementation units still use the same two-stage review loop (spec then quality).
 
+**Literal invocation rule:** The `agent` field MUST name the real subagent to run. `kind` is display metadata only. For orchestrator work, invoke `agent: "sprint-orchestrator"` or `agent: "task-orchestrator"` directly. You MUST NOT invoke `agent: "worker"` and rely on `kind` to impersonate an orchestrator.
+
+**Multi-sprint execution contract:** When the plan contains multiple sprints or other top-level grouped phases, the controller MUST execute those top-level groups sequentially unless the plan explicitly authorizes parallel top-level execution. Each top-level group MUST be owned by `sprint-orchestrator`. Within each sprint, grouped tickets/tasks MUST be owned by `task-orchestrator`. Within each grouped ticket/task, concrete subitems MUST be delegated to leaf subagents. Results MUST bubble upward as synthesized/verified summaries so the main controller keeps only plan state, task tracking, blockers, and synthesized outcomes rather than raw child transcripts.
+
 ## When to Use
 
 ```dot
@@ -42,6 +46,62 @@ If `>>` notes appear or are discovered while executing tasks:
 - Continue execution once the relevant plan section is updated
 
 Sprint-scoped or other top-level grouped work SHOULD dispatch `sprint-orchestrator`. Grouped parent tasks with child subitems SHOULD dispatch `task-orchestrator`, even when child execution is sequential. The controller SHOULD expect synthesized results from these orchestrators instead of micromanaging each lower-level step directly.
+
+Execution hierarchy for multi-sprint plans:
+- controller MUST process top-level sprints/groups sequentially unless the plan explicitly says otherwise
+- controller MUST dispatch `sprint-orchestrator` for each sprint/top-level group
+- `sprint-orchestrator` MUST dispatch `task-orchestrator` for grouped tickets/tasks
+- `task-orchestrator` MUST dispatch leaf subagents for concrete subitems
+- `task-orchestrator` MUST NOT dispatch another `task-orchestrator` for the same ticket/work item
+- `task-orchestrator` MAY dispatch a child `task-orchestrator` only for an explicitly distinct subgroup/workstream that already exists in the provided work and uses a distinct label
+- synthesized/verified results SHOULD move upward one level at a time; raw child transcripts SHOULD NOT be retained in the controller unless a blocker or review requires them
+
+Use literal tool payloads that select the real orchestrator agent:
+
+```json
+{
+  "agent": "sprint-orchestrator",
+  "kind": "sprint-orchestrator",
+  "label": "Sprint A",
+  "task": "Execute Sprint A using the provided grouped plan."
+}
+```
+
+```json
+{
+  "agent": "task-orchestrator",
+  "kind": "task-orchestrator",
+  "label": "Task 2.1",
+  "parentLabel": "Sprint A",
+  "task": "Execute Task 2.1 using the provided child subtasks."
+}
+```
+
+Bad pattern — do not do this:
+
+```json
+{
+  "agent": "worker",
+  "kind": "task-orchestrator",
+  "task": "..."
+}
+```
+
+Multi-sprint example shape:
+
+```text
+controller
+  -> sprint-orchestrator (Sprint 1)
+    -> task-orchestrator (Ticket 1)
+      -> leaf subagents (subitems)
+    -> task-orchestrator (Ticket 2)
+      -> leaf subagents (subitems)
+  -> sprint-orchestrator (Sprint 2)
+    -> task-orchestrator (Ticket 3)
+      -> leaf subagents (subitems)
+```
+
+This ordering is intentional: finish Sprint 1 synthesis/review before moving the controller to Sprint 2 unless the plan explicitly allows top-level parallelism.
 
 ```dot
 digraph process {
@@ -156,7 +216,9 @@ Task 2: Parent task with child subitems
 
 task-orchestrator:
   - determines child task ordering
-  - dispatches leaf implementer/reviewer subagents sequentially or in parallel as needed
+  - dispatches only leaf implementer/reviewer subagents for normal concrete work
+  - does not recurse into another task-orchestrator for the same ticket/work item
+  - may use a child task-orchestrator only for an explicitly distinct subgroup/workstream with a distinct label
   - returns a synthesized parent-task result
 
 Task 3: Hook installation script
@@ -261,12 +323,17 @@ Done!
 ## Red Flags
 
 **Never:**
+- Use `agent: "worker"` with `kind: "task-orchestrator"` or `kind: "sprint-orchestrator"`
+- Use `kind` as a substitute for choosing the correct `agent`
 - Start implementation on main/master branch without explicit user consent
 - Let subagents create or switch branches (`git checkout`, `git switch`, `git branch`) unless explicitly requested by the user
 - Skip reviews (spec compliance OR code quality)
 - Proceed with unfixed issues
 - Dispatch multiple implementation subagents in parallel from the controller for a single parent task; use `task-orchestrator` to own grouped child work
 - Flatten sprint/top-level grouped work directly from the controller when `sprint-orchestrator` should own it
+- Start Sprint N+1 before Sprint N has been synthesized and reviewed unless the plan explicitly authorizes top-level parallelism
+- Let `sprint-orchestrator` or `task-orchestrator` absorb concrete leaf subitem work when proper leaf delegation is available
+- Let `task-orchestrator` recursively spawn another `task-orchestrator` for the same ticket/work item or under the same effective label
 - Make subagent read plan file (provide full text instead)
 - Skip scene-setting context (subagent needs to understand where task fits)
 - Ignore subagent questions (answer before letting them proceed)
