@@ -73,12 +73,21 @@ When the user asks for a project plan (sprints/tasks/tickets), enforce these rul
 
 ## Task Structure
 
+Plans SHOULD include inline execution tracking so `superpowers:executing-plans` can keep progress current in the plan itself. Use this shared inline vocabulary for deliverables/tickets/tasks:
+- statuses: `[ ]` not started, `[-]` in progress, `[x]` done, `[!]` blocked
+- metadata: `commit`, `verification`, `note`, `blocker`, and optional `branch`
+
+Use the metadata consistently:
+- done items: `commit`, `verification`, `note`
+- blocked items: `blocker`
+- `branch` OPTIONAL only when it materially helps resume in-progress or blocked work
+
 ````markdown
 ## Sprint N: [Sprint Goal]
 
 **Demo Increment:** [What can be run/tested/demoed at sprint end]
 
-### Ticket N.M: [Atomic Ticket Name]
+### [ ] Ticket N.M: [Atomic Ticket Name]
 
 **Objective:** [Single technical outcome]
 **Dependencies:** [Ticket IDs or "none"]
@@ -122,6 +131,12 @@ Expected: PASS
 git add tests/path/test.py src/path/file.py
 git commit -m "feat: add specific feature"
 ```
+
+**Canonical Inline Status Examples:**
+- `[ ] Ticket N.M: [Atomic Ticket Name]`
+- `[-] Ticket N.M: [Atomic Ticket Name] — note: implementation in progress`
+- `[x] Ticket N.M: [Atomic Ticket Name] — commit: abc1234; verification: pytest tests/path/test.py::test_name -v; note: minimal implementation shipped`
+- `[!] Ticket N.M: [Atomic Ticket Name] — blocker: waiting on API contract decision; branch: ep/example-branch`
 ````
 
 ## Remember
@@ -130,6 +145,11 @@ git commit -m "feat: add specific feature"
 - Exact commands with expected output
 - Reference relevant skills with @ syntax
 - DRY, YAGNI, TDD, frequent commits
+- Write tickets/tasks so their inline status can be updated during execution without rewriting the plan structure
+- Use the same inline vocabulary and canonical example shapes that `superpowers:executing-plans` expects: statuses `[ ]`, `[-]`, `[x]`, `[!]`; metadata `commit`, `verification`, `note`, `blocker`, optional `branch`
+- Default ticket prefix SHOULD be `[ ]` so execution can move it to `[-]`, `[x]`, or `[!]`
+- Done items SHOULD be able to record `commit`, `verification`, and `note`
+- Blocked items SHOULD be able to record `blocker`; `branch` is OPTIONAL and only useful when it materially helps resume work
 - If tests are not appropriate for a ticket, provide explicit validation steps and expected outcomes
 - Each sprint must be demoable and build on previous sprints
 - Before presenting a plan as final, **REQUIRED SUB-SKILL:** run `superpowers:plan-annotation-cycle`
