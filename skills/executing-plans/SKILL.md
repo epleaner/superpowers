@@ -85,6 +85,14 @@ When the batch is complete:
 - show verification output
 - say: "Ready for feedback."
 
+Sprint-boundary rule:
+- A `major batch boundary` means a sprint, phase, or similar plan-level transition, not an ordinary small task batch.
+- If you are crossing a sprint boundary or major batch boundary and the next execution phase needs compacted, focused context, you SHOULD use `auto_handoff` instead of carrying the full old context forward.
+- **REQUIRED SUB-SKILL:** Use `auto-handoff` for goal-writing and post-call behavior.
+- You MUST NOT use `auto_handoff` after every small batch.
+- The `goal` MUST state the exact next sprint or major-batch outcome.
+- After invoking `auto_handoff`, you MUST NOT add duplicate handoff summary narration.
+
 ### Step 4: Continue
 Based on feedback:
 - apply changes if needed
@@ -132,6 +140,9 @@ Do not force through blockers.
 - Do not skip verifications.
 - Reference skills when the plan says to.
 - Between batches: report and wait.
+- At sprint or major batch boundaries, you SHOULD use `auto_handoff` when the next execution phase needs compacted, focused context.
+- You MUST NOT use `auto_handoff` for every minor batch transition.
+- When using `auto_handoff`, the `goal` MUST name the exact next sprint outcome, and you MUST NOT add duplicate summary narration after the tool call.
 - Stop when blocked; do not guess.
 - Never start implementation on main/master branch without explicit user consent.
 
