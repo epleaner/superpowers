@@ -1,5 +1,5 @@
 ---
-description: Execute plan in batches with review checkpoints
+description: Execute a plan end-to-end, continuing sprint by sprint unless blocked
 disable-model-invocation: true
 ---
 

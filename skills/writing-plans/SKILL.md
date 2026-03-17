@@ -167,6 +167,18 @@ After writing the first complete draft and saving it:
 
 You MUST NOT offer execution handoff before step 4 is complete.
 
+## Tracker Timing Rule
+
+When writing or revising a plan, you MUST treat the plan as the proposal of record until the user approves it.
+
+That means:
+- you MUST NOT create, restructure, or bulk-update beads/tasks to mirror the draft plan before approval
+- you SHOULD keep any pre-existing tracker state untouched while the plan is still under review
+- you MAY reference existing bead IDs in the draft when needed for context
+- only after explicit user approval SHOULD you create or update beads so tracker structure matches the approved plan
+
+If the user asks you to sync tracker state before approval, do it explicitly and call out that the tracker is being updated ahead of normal workflow.
+
 ## Execution Handoff
 
 After saving the first draft, request user `<<>>` annotations.
@@ -184,7 +196,7 @@ Final handoff prompt (after annotation cycle is clean):
 
 **1. Subagent-Driven (this session)** - I use `Agent` / `steer_subagent` / `get_subagent_result` for focused task execution and review between tasks
 
-**2. Parallel Session (separate)** - Open new session with executing-plans, batch execution with checkpoints
+**2. Parallel Session (separate)** - Open new session with executing-plans, full end-to-end execution sprint by sprint with auto-handoff between sprints when helpful
 
 **Which approach?"**
 
