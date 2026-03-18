@@ -76,7 +76,7 @@ Rules:
 
 After the design annotation gate is clean:
 - You MUST invoke `writing-plans` without asking for a second approval loop on the plan.
-- `writing-plans` MUST write the final implementation plan, open it in Zed for visibility, and continue autonomously.
+- `writing-plans` MUST write the final implementation plan and continue autonomously.
 - `writing-plans` MUST use `auto_handoff` to continue directly into `executing-plans`.
 - `executing-plans` MUST continue through the entire plan unless a real blocker or required user decision appears.
 

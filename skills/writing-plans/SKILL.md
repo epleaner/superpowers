@@ -170,9 +170,8 @@ After writing the plan:
 
 1. Tighten the document until it is execution-ready.
 2. Save it to `docs/plans/YYYY-MM-DD-<feature-name>.md`.
-3. Open the completed plan in Zed for user visibility.
-4. Do not ask for inline plan annotations.
-5. Continue directly into execution via `auto_handoff`.
+3. Do not ask for inline plan annotations.
+4. Continue directly into execution via `auto_handoff`.
 
 Required transition:
 
