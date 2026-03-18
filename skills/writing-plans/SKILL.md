@@ -22,10 +22,11 @@ Assume they are a skilled developer, but know almost nothing about our toolset o
 Before writing the implementation plan, verify:
 
 - Design is locked from `superpowers:brainstorming`
+- Design annotation cycle is complete via `superpowers:design-annotation-cycle`
 - Paired research doc exists: `docs/plans/YYYY-MM-DD-<feature-name>-research.md`
 - Mandatory hardening research pass is complete (from `superpowers:research-before-planning`)
 
-If any of these are missing, stop and run `superpowers:research-before-planning`.
+If any of these are missing, stop and run `superpowers:research-before-planning` and/or return to `superpowers:brainstorming`.
 
 ## Sprint Planning Requirements
 
@@ -152,66 +153,38 @@ git commit -m "feat: add specific feature"
 - Blocked items SHOULD be able to record `blocker`; `branch` is OPTIONAL and only useful when it materially helps resume work
 - If tests are not appropriate for a ticket, provide explicit validation steps and expected outcomes
 - Each sprint must be demoable and build on previous sprints
-- Before presenting a plan as final, **REQUIRED SUB-SKILL:** run `superpowers:plan-annotation-cycle`
-- Do not hand off to execution with any unresolved `<<>>` inline notes
-
-## Required Human Annotation Loop
-
-After writing the first complete draft and saving it:
-
-1. Present it explicitly as a **draft**, not final.
-2. Ask the user to annotate directly in the plan with `<<>>` comments.
-3. Wait for user annotations (or explicit opt-out).
-4. Run `superpowers:plan-annotation-cycle` to resolve all `<<>>` notes.
-5. Re-run scan until zero `<<>>` notes remain.
-
-You MUST NOT offer execution handoff before step 4 is complete.
+- The plan is not a second human signoff artifact; the design doc already served that purpose
 
 ## Tracker Timing Rule
 
-When writing or revising a plan, you MUST treat the plan as the proposal of record until the user approves it.
+After the design doc is signed off, planning becomes execution prep rather than another approval phase.
 
 That means:
-- you MUST NOT create, restructure, or bulk-update beads/tasks to mirror the draft plan before approval
-- you SHOULD keep any pre-existing tracker state untouched while the plan is still under review
-- you MAY reference existing bead IDs in the draft when needed for context
-- only after explicit user approval SHOULD you create or update beads so tracker structure matches the approved plan
+- you MAY create or update beads/tasks to match the execution plan once the design annotation cycle is complete
+- you MUST NOT pause for a separate plan-approval loop unless the user explicitly asks for one
+- if tracker structure changes, keep it aligned with the final written plan rather than with intermediate drafts
 
-If the user asks you to sync tracker state before approval, do it explicitly and call out that the tracker is being updated ahead of normal workflow.
+## Plan Finalization
 
-## Execution Handoff
+After writing the plan:
 
-After saving the first draft, request user `<<>>` annotations.
-After user annotations are provided (or the user explicitly opts out), resolve all inline `<<>>` notes via `superpowers:plan-annotation-cycle`.
+1. Tighten the document until it is execution-ready.
+2. Save it to `docs/plans/YYYY-MM-DD-<feature-name>.md`.
+3. Open the completed plan in Zed for user visibility.
+4. Do not ask for inline plan annotations.
+5. Continue directly into execution via `auto_handoff`.
 
-Only when zero `<<>>` notes remain, offer execution choice.
+Required transition:
 
-Required draft prompt before annotation cycle:
+**Call `auto_handoff` with a goal that tells the next turn to start `superpowers:executing-plans` on Sprint 1 and continue through the entire plan, using additional `auto_handoff` calls between sprints and long-running tasks to keep context focused.**
 
-**"Draft plan saved to `docs/plans/<filename>.md`. Add any inline feedback using `<<>>` comments directly in the file, then tell me when to resolve them."**
-
-Final handoff prompt (after annotation cycle is clean):
-
-**"Plan complete and saved to `docs/plans/<filename>.md`. Two execution options:**
-
-**1. Subagent-Driven (this session)** - I use `Agent` / `steer_subagent` / `get_subagent_result` for focused task execution and review between tasks
-
-**2. Parallel Session (separate)** - Open new session with executing-plans, full end-to-end execution sprint by sprint with auto-handoff between sprints when helpful
-
-**Which approach?"**
-
-**If Subagent-Driven chosen:**
-- **REQUIRED SUB-SKILL:** Use superpowers:subagent-driven-development
-- Stay in this session
-- Focused `Agent` calls per task + code review
-
-**If Parallel Session chosen:**
-- Guide them to open new session in worktree
-- **REQUIRED SUB-SKILL:** New session uses superpowers:executing-plans
+Do not stop with "next step is to execute the plan." Continue.
 
 ## Integration
 
 **Required workflow skills:**
 - **superpowers:research-before-planning** - Required pre-planning (unknown resolution + hardening pass)
-- **superpowers:plan-annotation-cycle** - Required before execution handoff (must resolve all `<<>>`)
+- **superpowers:design-annotation-cycle** - Required before planning starts (must resolve all `<<>>` in the design doc)
 - **superpowers:brainstorming** - Produces design and decision questions
+- **superpowers:executing-plans** - Required autonomous execution target after plan writing
+- **auto-handoff** - Required to move directly from plan writing into execution without pausing for another approval loop

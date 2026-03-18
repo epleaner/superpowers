@@ -1,38 +1,35 @@
 ---
 name: plan-annotation-cycle
-description: Use when plan documents contain human inline comments prefixed with <<>> during planning, to resolve each comment into plan updates before execution handoff.
+description: Use when maintaining an older workflow where a plan doc still contains human inline comments prefixed with <<>>; prefer design-annotation-cycle for the current workflow.
 ---
 
 # Plan Annotation Cycle
 
 ## Overview
 
-Resolve human inline notes in plan files until the plan is clean and executable.
+This is a legacy compatibility skill.
 
-Inline note format:
+Current workflow: annotate the design doc, not the implementation plan. Use `superpowers:design-annotation-cycle` for all new work.
 
-- Any line starting with `<<>>`
-
-Core principle: every `<<>>` is either resolved into the plan or explicitly clarified. None are ignored.
+Use this skill only when you are maintaining an older workflow or resuming a legacy plan file that already contains `<<>>` comments.
 
 ## Scope
 
-- Planning phase only
-- Not an execution-phase workflow
-
-By execution start, plans should contain zero `<<>>` comments.
+- Legacy planning workflow only
+- Not the default signoff path for new work
+- New workflows MUST move the human annotation loop to the design doc
 
 ## Process
 
 ### 1) Scan
 
-Scan plan document for all lines starting with `<<>>`.
+Scan the legacy plan document for all lines starting with `<<>>`.
 
 ### 2) Resolve
 
 For each `<<>>` note:
 
-- Apply the requested change to the nearest relevant ticket/step/acceptance criteria
+- Apply the requested change to the nearest relevant ticket, step, or acceptance criteria
 - Keep edits concrete and minimal
 - Preserve plan structure and numbering
 
@@ -53,17 +50,17 @@ Re-scan and repeat until no `<<>>` lines remain.
 
 ## Completion Gate
 
-Plan is not complete while any `<<>>` lines remain.
+A legacy plan is not clean while any `<<>>` lines remain.
 
-Do not hand off to execution (`executing-plans` or `subagent-driven-development`) until all `<<>>` notes are resolved and removed.
+Do not execute a legacy plan until all `<<>>` notes are resolved and removed.
 
 ## Red Flags
 
-- Editing around a `<<>>` note without resolving it
-- Converting `<<>>` notes into open backlog items instead of deciding now
-- Beginning execution with unresolved `<<>>` comments
+- Using this skill as the default review loop for new work
+- Writing a new workflow that asks for plan annotations instead of design annotations
+- Beginning execution with unresolved `<<>>` comments in a legacy plan
 
 ## Integration
 
-- Called by `superpowers:writing-plans` before presenting plan as final
-- Works with `superpowers:research-before-planning` so plan decisions stay evidence-backed
+- Legacy fallback for old plans only
+- Superseded by `superpowers:design-annotation-cycle` in the current workflow

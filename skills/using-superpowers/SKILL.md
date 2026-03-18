@@ -53,24 +53,34 @@ digraph skill_flow {
 }
 ```
 
-## Planning Annotation Gate
+## Design Annotation Gate
 
-When a plan document is created or revised (`writing-plans`), you MUST enforce a human annotation loop before final handoff.
+When a design document is created or revised during `brainstorming`, you MUST enforce a human annotation loop on the design doc before plan writing.
 
 Required sequence:
-1. Save first full draft.
-2. Open the plan file in Zed immediately after the first write.
-3. Ask the user to annotate the plan with inline `>>` comments.
-4. Wait for annotations (or explicit user opt-out).
-5. Run `plan-annotation-cycle`.
-6. Re-scan and repeat until zero `>>` lines remain.
+1. Save the research doc and design doc.
+2. Open the design doc in Zed immediately after the first write.
+3. Ask the user to annotate the design doc with inline `<<>>` comments.
+4. Wait for annotations or explicit user signoff.
+5. Run `design-annotation-cycle`.
+6. Re-scan and repeat until zero `<<>>` lines remain.
 
 Rules:
-- You MUST NOT present a plan as final before step 5.
-- You MUST NOT hand off to execution while any `>>` lines remain.
-- If the user opts out of annotation, you MAY proceed directly to `plan-annotation-cycle` scan/clean verification.
+- You MUST NOT present the design as signed off before step 5.
+- You MUST NOT invoke `writing-plans` while any `<<>>` lines remain in the design doc.
+- If the user opts out of annotation, you MAY proceed directly to `design-annotation-cycle` scan/clean verification.
 
-`writing-plans` is incomplete until this gate is satisfied.
+`brainstorming` is incomplete until this gate is satisfied.
+
+## Autonomous Plan Flow
+
+After the design annotation gate is clean:
+- You MUST invoke `writing-plans` without asking for a second approval loop on the plan.
+- `writing-plans` MUST write the final implementation plan, open it in Zed for visibility, and continue autonomously.
+- `writing-plans` MUST use `auto_handoff` to continue directly into `executing-plans`.
+- `executing-plans` MUST continue through the entire plan unless a real blocker or required user decision appears.
+
+Do not insert a separate human annotation cycle on the implementation plan.
 
 ## Red Flags
 
@@ -81,7 +91,7 @@ These thoughts mean STOP—you're rationalizing:
 | "This is just a simple question" | Questions are tasks. Check for skills. |
 | "I need more context first" | Skill check comes BEFORE clarifying questions. |
 | "Let me explore the codebase first" | Skills tell you HOW to explore. Check first. |
-| "I can check git/files quickly" | Files lack conversation context. Check for skills. |
+| "I can check git/files quickly" | Files lack conversation context. Check first. |
 | "Let me gather information first" | Skills tell you HOW to gather information. |
 | "This doesn't need a formal skill" | If a skill exists, use it. |
 | "I remember this skill" | Skills evolve. Read current version. |

@@ -1,6 +1,6 @@
 ---
 name: executing-plans
-description: Use when you have a written implementation plan to execute end-to-end in a separate session
+description: Use when you have a written implementation plan to execute end-to-end, usually after an autonomous handoff from writing-plans.
 ---
 
 # Executing Plans
@@ -26,8 +26,9 @@ Load the plan, review it critically, execute it to completion sprint by sprint, 
    - done items: `commit`, `verification`, `note`
    - blocked items: `blocker`
    - `branch` OPTIONAL only when it materially helps resume in-progress or blocked work
-6. If concerns exist, raise them before starting.
-7. If no concerns exist, create TodoWrite and proceed.
+6. If the plan has unresolved `<<>>` notes, treat that as a legacy planning defect. Resolve them via `superpowers:plan-annotation-cycle`, then continue only after the plan is clean.
+7. If concerns exist, revise the plan or raise only the questions that truly require a user decision.
+8. If no concerns exist, create TodoWrite and proceed.
 
 ### Step 2: Execute the Full Plan
 Default behavior: continue through the entire plan without waiting for interim approval.
@@ -87,23 +88,24 @@ Example background collection:
 }
 ```
 
-### Step 3: Report Progress While Continuing
-After each meaningful milestone, keep the user informed, but do not stop execution just to ask for routine feedback.
-
+### Step 3: Keep Going With Aggressive Context Control
 Default reporting behavior:
-- report at sprint completion, major phase completion, or real blockers
-- include what was implemented and the verification output
-- state the next sprint, ticket, or subtask being executed
-- continue automatically unless the user interrupts or a stop condition applies
+- do NOT stop for routine approval
+- do NOT emit a milestone-only message whose only purpose is to say "next step is to continue"
+- continue silently when no user action is required
+- surface blockers immediately and specific user decisions only when you truly need them
 
-Sprint-boundary rule:
-- A sprint boundary means a sprint, phase, or similar plan-level transition, not an ordinary small task transition.
-- If you are crossing a sprint boundary and the next execution phase needs compacted, focused context, you SHOULD use `auto_handoff` instead of carrying the full old context forward.
-- **REQUIRED SUB-SKILL:** Use `auto-handoff` for goal-writing and post-call behavior.
-- You MUST use `auto_handoff` between sprints when continuing execution would benefit from focused context.
-- You MUST NOT use `auto_handoff` after every small task or subtask.
-- The `goal` MUST state the exact next sprint outcome.
-- After invoking `auto_handoff`, you MUST NOT add duplicate handoff summary narration.
+Context-control rule:
+- **REQUIRED SUB-SKILL:** use `auto-handoff` for goal-writing and post-call behavior.
+- You MUST use `auto_handoff` between every sprint.
+- If a sprint is large enough that a single ticket or cluster of tickets materially bloats context, you SHOULD use `auto_handoff` between those long-running tasks as well.
+- You SHOULD prefer an earlier handoff over carrying bloated context forward.
+- Each `goal` MUST name the exact next sprint or task outcome.
+- After invoking `auto_handoff`, you MUST NOT add duplicate narration.
+
+Examples of good handoff goals:
+- `Execute Sprint 2 of docs/plans/2026-03-18-foo.md to completion, updating inline statuses and verification as you go.`
+- `Finish Ticket 3.4 in docs/plans/2026-03-18-foo.md, then continue the remaining Sprint 3 tasks with the same execution discipline.`
 
 ### Step 4: Continue Until Completion
 Keep executing the plan until one of these is true:
@@ -134,9 +136,9 @@ Ask for clarification rather than guessing.
 ## When to Revisit Earlier Steps
 
 Return to Review (Step 1) when:
-- the partner updates the plan based on your feedback
 - the fundamental approach needs rethinking
-- you discover new or unresolved `>>` notes while executing; refresh the plan via `superpowers:writing-plans` and/or `superpowers:plan-annotation-cycle`, then continue
+- the plan is updated materially during execution
+- you discover unresolved design drift that requires `superpowers:brainstorming` or `superpowers:writing-plans`
 
 Do not force through blockers.
 
@@ -155,11 +157,8 @@ Do not force through blockers.
 - Do not skip verifications.
 - Reference skills when the plan says to.
 - Continue automatically sprint by sprint, ticket by ticket, and subtask by subtask.
-- Report progress without pausing for routine approval.
-- At sprint boundaries, you SHOULD use `auto_handoff` when the next execution phase needs compacted, focused context.
-- You MUST use `auto_handoff` between sprints when that keeps the next sprint focused.
-- You MUST NOT use `auto_handoff` for every minor task transition.
-- When using `auto_handoff`, the `goal` MUST name the exact next sprint outcome, and you MUST NOT add duplicate summary narration after the tool call.
+- Use `auto_handoff` between every sprint.
+- Use `auto_handoff` inside a sprint whenever context is starting to balloon.
 - Stop when blocked or when specific user direction is required; do not guess.
 - Never start implementation on main/master branch without explicit user consent.
 
@@ -169,3 +168,4 @@ Do not force through blockers.
 - **superpowers:using-git-worktrees** - REQUIRED: Set up isolated workspace before starting
 - **superpowers:writing-plans** - Creates the plan this skill executes
 - **superpowers:finishing-a-development-branch** - Complete development after all tasks
+- **auto-handoff** - REQUIRED for sprint-to-sprint and long-task context compaction

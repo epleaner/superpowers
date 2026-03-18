@@ -17,7 +17,7 @@ For any feature with planning work, maintain a paired research document:
 
 - `docs/plans/YYYY-MM-DD-<feature>-research.md`
 
-This file is required before handoff to `superpowers:writing-plans`.
+This file is required before the design annotation cycle can close and before handoff to `superpowers:writing-plans`.
 
 ## Process
 
@@ -41,9 +41,17 @@ For each unresolved decision question:
 
 Use research findings to choose the design path. Continue loop until decision-critical unknowns are resolved or explicitly de-scoped.
 
-### 4) Mandatory Hardening Pass (After Design Lock)
+### 4) Write the Research Doc Before Design Signoff
 
-After design is locked, run a thorough hardening pass before planning:
+Before design signoff:
+
+- Save the current evidence and decisions into `*-research.md`
+- Keep the research doc aligned with the design doc during annotation resolution
+- Update the research doc whenever design feedback changes a decision or evidence trail
+
+### 5) Mandatory Hardening Pass (After Design Stabilizes, Before Planning)
+
+After the design is stable enough to document, run a thorough hardening pass before planning:
 
 - Validate file touchpoints and dependency surfaces
 - Validate interface and contract constraints
@@ -53,7 +61,7 @@ After design is locked, run a thorough hardening pass before planning:
 
 If hardening reveals architecture-level conflicts, reopen brainstorming.
 
-If no conflicts remain, planning can proceed.
+If no conflicts remain and the design annotation cycle is clean, planning can proceed.
 
 ## Red Flags
 
@@ -61,9 +69,10 @@ If no conflicts remain, planning can proceed.
 - Moving to `writing-plans` without `*-research.md`
 - Treating unresolved decision-critical unknowns as "good enough"
 - Skipping hardening pass because design "looks right"
+- Letting the research doc drift away from the annotated design doc
 
 ## Integration
 
 - Called during `superpowers:brainstorming` whenever unknowns appear
 - Required before `superpowers:writing-plans`
-- Pairs with `superpowers:plan-annotation-cycle` to finalize executable plans
+- Pairs with `superpowers:design-annotation-cycle` so design revisions stay evidence-backed

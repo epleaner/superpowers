@@ -19,17 +19,17 @@ Execute the plan in this session by spawning focused subagents with `Agent`, the
 digraph when_to_use {
     "Have implementation plan?" [shape=diamond];
     "Tasks mostly independent?" [shape=diamond];
-    "Stay in this session?" [shape=diamond];
+    "Need per-task steering and reviews?" [shape=diamond];
     "subagent-driven-development" [shape=box];
     "executing-plans" [shape=box];
     "Manual execution or brainstorm first" [shape=box];
 
     "Have implementation plan?" -> "Tasks mostly independent?" [label="yes"];
     "Have implementation plan?" -> "Manual execution or brainstorm first" [label="no"];
-    "Tasks mostly independent?" -> "Stay in this session?" [label="yes"];
+    "Tasks mostly independent?" -> "Need per-task steering and reviews?" [label="yes"];
     "Tasks mostly independent?" -> "Manual execution or brainstorm first" [label="no - tightly coupled"];
-    "Stay in this session?" -> "subagent-driven-development" [label="yes"];
-    "Stay in this session?" -> "executing-plans" [label="no - separate session"];
+    "Need per-task steering and reviews?" -> "subagent-driven-development" [label="yes"];
+    "Need per-task steering and reviews?" -> "executing-plans" [label="no - autonomous flow"];
 }
 ```
 
@@ -40,9 +40,9 @@ Use this when:
 - you want review after each task, not only at the end
 
 Use `superpowers:executing-plans` instead when:
-- execution should happen in a separate session
+- you want uninterrupted end-to-end execution with minimal controller chatter
 - you want batch checkpoints instead of per-task steering
-- the plan is large enough that isolating execution context in another session is cleaner
+- the plan is large enough that aggressive `auto_handoff` compaction is cleaner than per-task controller orchestration
 
 ## Agent Types
 
@@ -55,9 +55,10 @@ Project-local custom agent types MAY exist in `.pi/agents/*.md`. Prefer them onl
 
 ## The Process
 
-If `>>` notes appear or are discovered while executing:
-- refresh the plan via `superpowers:writing-plans` and/or `superpowers:plan-annotation-cycle`
-- resume execution only after the relevant plan section is updated
+If `<<>>` notes appear or are discovered while executing:
+- treat that as stale planning state, not as a normal execution loop
+- refresh the plan via `superpowers:writing-plans`
+- resume execution only after the relevant plan section is updated and clean
 
 ### 1. Controller prep
 - Read the plan once.

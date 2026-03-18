@@ -9,10 +9,10 @@ description: "You MUST use this before any creative work - creating features, bu
 
 Help turn ideas into fully formed designs and specs through natural collaborative dialogue.
 
-Start by understanding the current project context, then ask questions one at a time to refine the idea. Once you understand what you're building, present the design and get user approval.
+Start by understanding the current project context, then ask questions one at a time to refine the idea. Once you understand what you're building, write the research doc and design doc, get the design doc annotated and signed off, then hand off to planning.
 
 <HARD-GATE>
-Do NOT invoke any implementation skill, write any code, scaffold any project, or take any implementation action until you have presented a design and the user has approved it. This applies to EVERY project regardless of perceived simplicity.
+Do NOT invoke any implementation skill, write any code, scaffold any project, or take any implementation action until the design doc annotation cycle is complete and the design is signed off. This applies to EVERY project regardless of perceived simplicity.
 </HARD-GATE>
 
 ## Anti-Pattern: "This Is Too Simple To Need A Design"
@@ -27,8 +27,10 @@ You MUST create a task for each of these items and complete them in order:
 2. **Ask clarifying questions** — one at a time, understand purpose/constraints/success criteria
 3. **Propose 2-3 approaches** — with trade-offs and your recommendation
 4. **Present design** — in sections scaled to their complexity, get user approval after each section
-5. **Write design doc** — save to `docs/plans/YYYY-MM-DD-<topic>-design.md` and commit
-6. **Transition to implementation** — invoke writing-plans skill to create implementation plan
+5. **Write research doc** — save to `docs/plans/YYYY-MM-DD-<topic>-research.md`
+6. **Write design doc** — save to `docs/plans/YYYY-MM-DD-<topic>-design.md` and commit
+7. **Run design annotation cycle** — open the design doc in Zed, collect `<<>>` feedback, resolve it with `superpowers:design-annotation-cycle`
+8. **Transition to implementation** — invoke `writing-plans`, then continue autonomously into execution
 
 ## Process Flow
 
@@ -38,17 +40,21 @@ digraph brainstorming {
     "Ask clarifying questions" [shape=box];
     "Propose 2-3 approaches" [shape=box];
     "Present design sections" [shape=box];
-    "User approves design?" [shape=diamond];
+    "Write research doc" [shape=box];
     "Write design doc" [shape=box];
-    "Invoke writing-plans skill" [shape=doublecircle];
+    "Design doc annotated?" [shape=diamond];
+    "Run design-annotation-cycle" [shape=box];
+    "Invoke writing-plans" [shape=doublecircle];
 
     "Explore project context" -> "Ask clarifying questions";
     "Ask clarifying questions" -> "Propose 2-3 approaches";
     "Propose 2-3 approaches" -> "Present design sections";
-    "Present design sections" -> "User approves design?";
-    "User approves design?" -> "Present design sections" [label="no, revise"];
-    "User approves design?" -> "Write design doc" [label="yes"];
-    "Write design doc" -> "Invoke writing-plans skill";
+    "Present design sections" -> "Write research doc";
+    "Write research doc" -> "Write design doc";
+    "Write design doc" -> "Design doc annotated?";
+    "Design doc annotated?" -> "Run design-annotation-cycle" [label="feedback present"];
+    "Run design-annotation-cycle" -> "Design doc annotated?";
+    "Design doc annotated?" -> "Invoke writing-plans" [label="signed off"];
 }
 ```
 
@@ -76,18 +82,31 @@ digraph brainstorming {
 - Ask after each section whether it looks right so far
 - Cover: architecture, components, data flow, error handling, testing
 - Be ready to go back and clarify if something doesn't make sense
-- After design lock, run mandatory hardening research pass via `superpowers:research-before-planning` before handing off to planning
+- After the conversational design is stable, write the research doc and design doc before signoff
+
+## Design Doc Signoff
+
+After saving the first design doc draft:
+- Open `docs/plans/YYYY-MM-DD-<topic>-design.md` in Zed immediately
+- Ask the user to annotate the file with inline `<<>>` comments
+- **REQUIRED SUB-SKILL:** use `superpowers:design-annotation-cycle`
+- Repeat until zero `<<>>` lines remain
+- Only then is the design locked
+
+The design doc, not the implementation plan, is the human signoff artifact.
 
 ## After the Design
 
 **Documentation:**
-- Write the validated design to `docs/plans/YYYY-MM-DD-<topic>-design.md`
+- Write the validated research doc to `docs/plans/YYYY-MM-DD-<topic>-research.md`
+- Write the validated design doc to `docs/plans/YYYY-MM-DD-<topic>-design.md`
 - Use elements-of-style:writing-clearly-and-concisely skill if available
-- Commit the design document to git
+- Commit the docs to git
 
 **Implementation:**
-- Invoke the writing-plans skill to create a detailed implementation plan (only after hardening research is complete)
-- Do NOT invoke any other skill. writing-plans is the next step.
+- Invoke the writing-plans skill to create a detailed implementation plan after design signoff
+- Planning and execution continue autonomously after design signoff unless a real blocker appears
+- Do NOT create a second annotation loop on the plan
 
 ## Key Principles
 
@@ -96,5 +115,5 @@ digraph brainstorming {
 - **YAGNI (You Aren't Gonna Need It) ruthlessly** - Remove unnecessary features from all designs
 - **Explore alternatives** - Always propose 2-3 approaches before settling
 - **Research and brainstorming are a loop** - Research answers decision questions; brainstorming uses those answers
-- **Incremental validation** - Present design, get approval before moving on
+- **Incremental validation** - Present design, then get signoff on the design doc before moving on
 - **Be flexible** - Go back and clarify when something doesn't make sense
