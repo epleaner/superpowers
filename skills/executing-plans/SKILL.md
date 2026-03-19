@@ -26,7 +26,7 @@ Load the plan, review it critically, execute it to completion sprint by sprint, 
    - done items: `commit`, `verification`, `note`
    - blocked items: `blocker`
    - `branch` OPTIONAL only when it materially helps resume in-progress or blocked work
-6. If the plan has unresolved `<<>>` notes, treat that as a legacy planning defect. Resolve them via `superpowers:plan-annotation-cycle`, then continue only after the plan is clean.
+6. If the plan has unresolved `<<>>` notes, treat that as stale forbidden content. Do not continue execution. Escalate immediately because the plan violates the no-plan-annotation workflow.
 7. If concerns exist, revise the plan or raise only the questions that truly require a user decision.
 8. If no concerns exist, create TodoWrite and proceed.
 
