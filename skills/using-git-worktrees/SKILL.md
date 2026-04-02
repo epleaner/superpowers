@@ -1,6 +1,6 @@
 ---
 name: using-git-worktrees
-description: Use when starting feature work that needs isolation from current workspace or before executing implementation plans, except any cloud repo work where worktrees must not be used (including services/baraza/frontend)
+description: Use when starting feature work that needs isolation from the current workspace or before executing implementation plans.
 ---
 
 # Using Git Worktrees
@@ -13,19 +13,13 @@ Git worktrees create isolated workspaces sharing the same repository, allowing w
 
 **Announce at start:** "I'm using the using-git-worktrees skill to set up an isolated workspace."
 
-## Hard Guard: Cloud Repo Exception
+## Cloud Repo Note
 
-Do not use worktrees for any cloud repo work.
+Cloud repo work MAY use git worktrees.
 
-Treat `services/baraza/frontend` as an explicit no-worktree path.
+Treat `services/baraza/frontend` like any other cloud path unless a narrower task-specific instruction says otherwise.
 
-If the task is in cloud repo context, stop this skill immediately and continue in the current checkout/branch.
-
-Use this response:
-
-```
-Worktree setup skipped: cloud repo work must run in the current checkout, not a git worktree. This includes services/baraza/frontend.
-```
+If a cloud-specific workflow doc requires a particular checkout shape, follow that narrower document. Otherwise, proceed with normal worktree setup.
 
 ## Directory Selection Process
 
@@ -159,7 +153,7 @@ Ready to implement <feature-name>
 
 | Situation | Action |
 |-----------|--------|
-| Any cloud repo work (including `services/baraza/frontend`) | Skip worktree; continue in current checkout |
+| Any repo, including `cloud` and `services/baraza/frontend` | Worktrees are allowed; follow normal directory selection |
 | `.worktrees/` exists | Use it (verify ignored) |
 | `worktrees/` exists | Use it (verify ignored) |
 | Both exist | Use `.worktrees/` |
@@ -180,10 +174,10 @@ Ready to implement <feature-name>
 - **Problem:** Creates inconsistency, violates project conventions
 - **Fix:** Follow priority: existing > CLAUDE.md > ask
 
-### Using worktrees in cloud repo work
+### Ignoring narrower repo instructions
 
-- **Problem:** Violates cloud workflow rules; creates avoidable branch/workspace drift
-- **Fix:** For any cloud repo scope, do not create a worktree (`services/baraza/frontend` is explicitly disallowed)
+- **Problem:** A task-specific workflow may still require a particular checkout shape or wrapper behavior
+- **Fix:** Read the relevant repo and skill docs first; if none add a narrower restriction, proceed with a worktree
 
 ### Proceeding with failing tests
 
@@ -214,15 +208,14 @@ Ready to implement auth feature
 ## Red Flags
 
 **Never:**
-- Create a worktree for any cloud repo work (especially `services/baraza/frontend`)
-- Create worktree without verifying it's ignored (project-local)
+- Create a worktree without verifying it's ignored (project-local)
 - Skip baseline test verification
 - Proceed with failing tests without asking
 - Assume directory location when ambiguous
 - Skip CLAUDE.md check
 
 **Always:**
-- Apply the cloud repo guard first
+- Check for narrower repo or task-specific instructions before creating the worktree
 - Follow directory priority: existing > CLAUDE.md > ask
 - Verify directory is ignored for project-local
 - Auto-detect and run project setup
@@ -231,9 +224,9 @@ Ready to implement auth feature
 ## Integration
 
 **Called by:**
-- **brainstorming** (Phase 4) - REQUIRED when design is approved and implementation follows, except cloud repo scope
-- **subagent-driven-development** - REQUIRED before executing any tasks, except cloud repo scope
-- **executing-plans** - REQUIRED before executing any tasks, except cloud repo scope
+- **brainstorming** (Phase 4) - REQUIRED when design is approved and implementation follows
+- **subagent-driven-development** - REQUIRED before executing any tasks
+- **executing-plans** - REQUIRED before executing any tasks
 - Any skill needing isolated workspace
 
 **Pairs with:**
