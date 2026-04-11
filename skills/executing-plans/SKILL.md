@@ -98,6 +98,14 @@ Default reporting behavior:
 Context-control rule:
 - **REQUIRED SUB-SKILL:** use `auto-handoff` for goal-writing and post-call behavior.
 - You MUST use `auto_handoff` between every sprint.
+- `auto_handoff` between sprints is a CONTINUATION rule, not a stopping rule.
+- Finishing a sprint means you continue into the next sprint, either in the same session or via immediate `auto_handoff`.
+- Sprint boundaries are context-management boundaries, NOT stopping boundaries.
+- You MUST NOT stop merely because a sprint finished.
+- After each sprint, you MUST either:
+  1. continue directly into the next sprint in the same session, or
+  2. use `auto_handoff` with an explicit goal that starts the next sprint immediately.
+- You MUST pause at a sprint boundary only when the user explicitly instructs a stop, a real blocker is present, or a required product/policy decision is missing.
 - If a sprint is large enough that a single ticket or cluster of tickets materially bloats context, you SHOULD use `auto_handoff` between those long-running tasks as well.
 - You SHOULD prefer an earlier handoff over carrying bloated context forward.
 - Each `goal` MUST name the exact next sprint or task outcome.
@@ -112,8 +120,11 @@ Keep executing the plan until one of these is true:
 - every planned item is complete and verified
 - you are blocked
 - you need specific user direction to resolve an intentional product, policy, or design decision
+- the user explicitly tells you to stop after a named boundary
 
 Do not stop merely because a small batch finished.
+Do not stop merely because a sprint finished.
+If one sprint completes and another sprint remains planned, the default action is to continue.
 
 ### Step 5: Complete Development
 
@@ -158,8 +169,9 @@ Do not force through blockers.
 - Reference skills when the plan says to.
 - Continue automatically sprint by sprint, ticket by ticket, and subtask by subtask.
 - Use `auto_handoff` between every sprint.
+- Treat sprint boundaries as continuation points, not pause points.
 - Use `auto_handoff` inside a sprint whenever context is starting to balloon.
-- Stop when blocked or when specific user direction is required; do not guess.
+- Stop only when blocked, when specific user direction is required, or when the user explicitly tells you to stop at a boundary; do not guess.
 - Never start implementation on main/master branch without explicit user consent.
 
 ## Integration
