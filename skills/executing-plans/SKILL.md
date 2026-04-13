@@ -7,7 +7,7 @@ description: Use when you have a written implementation plan to execute end-to-e
 
 Load the plan, review it critically, execute it to completion sprint by sprint, ticket by ticket, and subtask by subtask, keep the plan doc updated inline as work progresses, and stop only for blockers or specific user direction.
 
-**Core principle:** The plan is the source of truth for current execution status, not just a static checklist.
+**Core principle:** `docs/plans/<slug>/plan.md` is the source of truth for execution status. `docs/plans/<slug>/index.md` is the durable thread-state entrypoint for phase, resume, next action, and blocker state.
 
 **Announce at start:** "I'm using the executing-plans skill to implement this plan."
 
@@ -46,6 +46,25 @@ Before executing, treat the plan doc as a living record. Update the relevant inl
 - mark `[!]` immediately when blocked, with a specific `blocker`
 - keep inline metadata current so a new session can resume from the plan alone
 
+Also treat `docs/plans/<slug>/index.md` as the durable repo-state summary for cross-session recovery. Update it at meaningful execution boundaries, especially when:
+- the phase changes, such as planning -> executing, executing -> blocked, or executing -> done
+- you finish a sprint or other major phase boundary
+- you stop for a blocker or for required user input
+- you are about to call `auto_handoff` after a substantial unit of work
+- the next action or best resume target has changed materially
+
+At those boundaries, update `index.md` with the smallest useful durable state:
+- `phase`
+- `last_active`
+- `next_action`
+- `blocker`
+- `resume_from` when helpful
+
+Keep ownership clean:
+- execution detail, inline ticket progress, verification notes, and commit metadata stay in `plan.md`
+- durable thread state and resume guidance stay in `index.md`
+- do not treat `auto_handoff` as a substitute for updating `index.md`
+
 Subagent rule:
 - You MUST use the installed `pi-subagents` tools: `Agent`, `get_subagent_result`, and `steer_subagent`.
 - You MUST call `Agent` with `subagent_type`, `prompt`, and `description`.
@@ -62,6 +81,7 @@ For each execution unit:
 7. When delivered, update the plan doc inline to `[x]` and record `commit`, `verification`, and `note`.
 8. If blocked, update the plan doc inline to `[!]`, record the exact `blocker`, and include `branch` only if it materially helps resume the work.
 9. After finishing one execution unit, continue directly into the next planned unit unless a stop condition applies.
+10. At any meaningful boundary, make the corresponding minimal `index.md` update before moving on or handing off.
 
 Canonical inline examples:
 - `[ ] Ticket 2.1: Add retry banner`
@@ -105,15 +125,17 @@ Context-control rule:
 - After each sprint, you MUST either:
   1. continue directly into the next sprint in the same session, or
   2. use `auto_handoff` with an explicit goal that starts the next sprint immediately.
+- Before a sprint-boundary handoff, you MUST update `index.md` with the current `phase`, `last_active`, `next_action`, and `resume_from`, plus `blocker` if present.
 - You MUST pause at a sprint boundary only when the user explicitly instructs a stop, a real blocker is present, or a required product/policy decision is missing.
 - If a sprint is large enough that a single ticket or cluster of tickets materially bloats context, you SHOULD use `auto_handoff` between those long-running tasks as well.
+- Before those intra-sprint handoffs, you SHOULD make the minimal `index.md` update needed for durable resume.
 - You SHOULD prefer an earlier handoff over carrying bloated context forward.
 - Each `goal` MUST name the exact next sprint or task outcome.
 - After invoking `auto_handoff`, you MUST NOT add duplicate narration.
 
 Examples of good handoff goals:
-- `Execute Sprint 2 of docs/plans/2026-03-18-foo.md to completion, updating inline statuses and verification as you go.`
-- `Finish Ticket 3.4 in docs/plans/2026-03-18-foo.md, then continue the remaining Sprint 3 tasks with the same execution discipline.`
+- `Execute Sprint 2 of docs/plans/foo/plan.md to completion, updating inline statuses and verification as you go.`
+- `Finish Ticket 3.4 in docs/plans/foo/plan.md, then continue the remaining Sprint 3 tasks with the same execution discipline.`
 
 ### Step 4: Continue Until Completion
 Keep executing the plan until one of these is true:
@@ -155,7 +177,8 @@ Do not force through blockers.
 
 ## Remember
 - Review the plan critically first.
-- Treat the plan doc as a living handoff artifact, not a static checklist.
+- Treat `plan.md` as a living execution artifact, not a static checklist.
+- Treat `index.md` as the durable thread-state entrypoint for repo-based resume.
 - Keep inline task status current: `[ ]`, `[-]`, `[x]`, `[!]`.
 - Use the same inline metadata vocabulary throughout: `commit`, `verification`, `note`, `blocker`, and optional `branch`.
 - For delivered items, record `commit`, `verification`, and `note`.
@@ -170,7 +193,9 @@ Do not force through blockers.
 - Continue automatically sprint by sprint, ticket by ticket, and subtask by subtask.
 - Use `auto_handoff` between every sprint.
 - Treat sprint boundaries as continuation points, not pause points.
+- Update `index.md` at meaningful execution boundaries with `phase`, `last_active`, `next_action`, `blocker`, and `resume_from` when helpful.
 - Use `auto_handoff` inside a sprint whenever context is starting to balloon.
+- Use `auto_handoff` for session compaction and focus only; do not use it instead of durable repo-state updates in `index.md`.
 - Stop only when blocked, when specific user direction is required, or when the user explicitly tells you to stop at a boundary; do not guess.
 - Never start implementation on main/master branch without explicit user consent.
 
