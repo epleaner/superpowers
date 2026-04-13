@@ -27,10 +27,11 @@ You MUST create a task for each of these items and complete them in order:
 2. **Ask clarifying questions** — one at a time, understand purpose/constraints/success criteria
 3. **Propose 2-3 approaches** — with trade-offs and your recommendation
 4. **Present design** — in sections scaled to their complexity, get user approval after each section
-5. **Write research doc** — save to `docs/plans/YYYY-MM-DD-<topic>-research.md`
-6. **Write design doc** — save to `docs/plans/YYYY-MM-DD-<topic>-design.md` and commit
-7. **Run design annotation cycle** — open the design doc in Zed, collect `<<>>` feedback, resolve it with `superpowers:design-annotation-cycle`
-8. **Transition to implementation** — invoke `writing-plans`, then continue autonomously into execution
+5. **Create or reuse the initiative thread** — use `docs/plans/<slug>/` with `index.md`, `research.md`, and `design.md`
+6. **Write research doc** — save to `docs/plans/<slug>/research.md` and update `docs/plans/<slug>/index.md`
+7. **Write design doc** — save to `docs/plans/<slug>/design.md` and update `docs/plans/<slug>/index.md`
+8. **Run design annotation cycle** — open the design doc in Zed, collect `<<>>` feedback, resolve it with `superpowers:design-annotation-cycle`
+9. **Transition to implementation** — invoke `writing-plans`, then continue autonomously into execution
 
 ## Process Flow
 
@@ -40,6 +41,7 @@ digraph brainstorming {
     "Ask clarifying questions" [shape=box];
     "Propose 2-3 approaches" [shape=box];
     "Present design sections" [shape=box];
+    "Create or reuse thread folder" [shape=box];
     "Write research doc" [shape=box];
     "Write design doc" [shape=box];
     "Design doc annotated?" [shape=diamond];
@@ -49,7 +51,8 @@ digraph brainstorming {
     "Explore project context" -> "Ask clarifying questions";
     "Ask clarifying questions" -> "Propose 2-3 approaches";
     "Propose 2-3 approaches" -> "Present design sections";
-    "Present design sections" -> "Write research doc";
+    "Present design sections" -> "Create or reuse thread folder";
+    "Create or reuse thread folder" -> "Write research doc";
     "Write research doc" -> "Write design doc";
     "Write design doc" -> "Design doc annotated?";
     "Design doc annotated?" -> "Run design-annotation-cycle" [label="feedback present"];
@@ -87,10 +90,11 @@ digraph brainstorming {
 ## Design Doc Signoff
 
 After saving the first design doc draft:
-- Open `docs/plans/YYYY-MM-DD-<topic>-design.md` in Zed immediately
+- Open `docs/plans/<slug>/design.md` in Zed immediately
 - Ask the user to annotate the file with inline `<<>>` comments
 - **REQUIRED SUB-SKILL:** use `superpowers:design-annotation-cycle`
 - Repeat until zero `<<>>` lines remain
+- Update `docs/plans/<slug>/index.md` so it reflects the current phase, next action, and `resume_from`
 - Only then is the design locked
 
 The design doc, not the implementation plan, is the human signoff artifact.
@@ -98,8 +102,11 @@ The design doc, not the implementation plan, is the human signoff artifact.
 ## After the Design
 
 **Documentation:**
-- Write the validated research doc to `docs/plans/YYYY-MM-DD-<topic>-research.md`
-- Write the validated design doc to `docs/plans/YYYY-MM-DD-<topic>-design.md`
+- Create or reuse `docs/plans/<slug>/` in line with `docs/agent-doc-system.md`
+- Initialize or update `docs/plans/<slug>/index.md` before writing docs
+- Write the validated research doc to `docs/plans/<slug>/research.md`
+- Write the validated design doc to `docs/plans/<slug>/design.md`
+- Update `docs/plans/<slug>/index.md` after material research or design changes so phase, next action, current docs, and `resume_from` stay accurate
 - Use elements-of-style:writing-clearly-and-concisely skill if available
 - Commit the docs to git
 

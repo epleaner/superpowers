@@ -1,6 +1,6 @@
 ---
 name: research-before-planning
-description: Use when brainstorming surfaces decision-critical unknowns or before writing implementation plans, requiring a paired docs/plans/YYYY-MM-DD-<feature>-research.md evidence document.
+description: Use when brainstorming surfaces decision-critical unknowns or before writing implementation plans, requiring a paired `docs/plans/<slug>/research.md` evidence document and aligned `index.md` thread state.
 ---
 
 # Research Before Planning
@@ -13,11 +13,12 @@ Core principle: state-based progression. Move forward only when decision-critica
 
 ## Required Output
 
-For any feature with planning work, maintain a paired research document:
+For any feature with planning work, maintain a paired thread folder under `docs/plans/<slug>/` and keep its research document current:
 
-- `docs/plans/YYYY-MM-DD-<feature>-research.md`
+- `docs/plans/<slug>/research.md`
+- `docs/plans/<slug>/index.md`
 
-This file is required before the design annotation cycle can close and before handoff to `superpowers:writing-plans`.
+`research.md` is required before the design annotation cycle can close and before handoff to `superpowers:writing-plans`. `index.md` MUST reflect the current phase, next action, and resume target whenever research changes materially.
 
 ## Process
 
@@ -33,8 +34,9 @@ When brainstorming reveals an unknown that can change architecture, contracts, i
 For each unresolved decision question:
 
 - Gather only evidence needed to answer that question
-- Record findings in `*-research.md`
+- Record findings in `docs/plans/<slug>/research.md`
 - Record decision impact on architecture and implementation scope
+- Update `docs/plans/<slug>/index.md` when findings materially change the phase, next action, or resume target
 - Mark question resolved or keep unresolved with explicit blocker
 
 ### 3) Return to Brainstorming
@@ -45,8 +47,9 @@ Use research findings to choose the design path. Continue loop until decision-cr
 
 Before design signoff:
 
-- Save the current evidence and decisions into `*-research.md`
-- Keep the research doc aligned with the design doc during annotation resolution
+- Save the current evidence and decisions into `docs/plans/<slug>/research.md`
+- Keep the research doc aligned with `docs/plans/<slug>/design.md` during annotation resolution
+- Update `docs/plans/<slug>/index.md` whenever research changes the active phase or next action
 - Update the research doc whenever design feedback changes a decision or evidence trail
 
 ### 5) Mandatory Hardening Pass (After Design Stabilizes, Before Planning)
@@ -66,10 +69,11 @@ If no conflicts remain and the design annotation cycle is clean, planning can pr
 ## Red Flags
 
 - Research that does not answer a specific decision question
-- Moving to `writing-plans` without `*-research.md`
+- Moving to `writing-plans` without `docs/plans/<slug>/research.md`
 - Treating unresolved decision-critical unknowns as "good enough"
 - Skipping hardening pass because design "looks right"
-- Letting the research doc drift away from the annotated design doc
+- Letting `docs/plans/<slug>/research.md` drift away from the annotated design doc
+- Failing to update `docs/plans/<slug>/index.md` after material research changes
 
 ## Integration
 
