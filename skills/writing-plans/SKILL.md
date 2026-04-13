@@ -15,7 +15,9 @@ Assume they are a skilled developer, but know almost nothing about our toolset o
 
 **Context:** This should be run in a dedicated worktree (created by brainstorming skill).
 
-**Save plans to:** `docs/plans/YYYY-MM-DD-<feature-name>.md`
+**Write plans to:** `docs/plans/<slug>/plan.md`
+
+**Thread state file:** `docs/plans/<slug>/index.md` is the canonical durable thread-state file and MUST be updated before `auto_handoff` into execution.
 
 ## Required Inputs Before Planning
 
@@ -23,7 +25,9 @@ Before writing the implementation plan, verify:
 
 - Design is locked from `superpowers:brainstorming`
 - Design annotation cycle is complete via `superpowers:design-annotation-cycle`
-- Paired research doc exists: `docs/plans/YYYY-MM-DD-<feature-name>-research.md`
+- Paired research doc exists at `docs/plans/<slug>/research.md`
+- Paired design doc exists at `docs/plans/<slug>/design.md`
+- `docs/plans/<slug>/index.md` exists and is the current thread entrypoint
 - Mandatory hardening research pass is complete (from `superpowers:research-before-planning`)
 
 If any of these are missing, stop and run `superpowers:research-before-planning` and/or return to `superpowers:brainstorming`.
@@ -169,9 +173,10 @@ That means:
 After writing the plan:
 
 1. Tighten the document until it is execution-ready.
-2. Save it to `docs/plans/YYYY-MM-DD-<feature-name>.md`.
-3. Do not ask for inline plan annotations.
-4. Continue directly into execution via `auto_handoff`.
+2. Save or update it in place at `docs/plans/<slug>/plan.md`.
+3. Update `docs/plans/<slug>/index.md` so it reflects planning state, points to `./plan.md` in `current_docs.plan`, sets `resume_from` appropriately, and records the next execution action.
+4. Do not ask for inline plan annotations.
+5. Continue directly into execution via `auto_handoff`.
 
 Required transition:
 
@@ -179,11 +184,19 @@ Required transition:
 
 Do not stop with "next step is to execute the plan." Continue.
 
+## Path And Workflow Rules
+
+- Use the stable thread-folder workflow from `docs/agent-doc-system.md`.
+- Do not create new dated flat plan files for active work in this repo.
+- `docs/plans/<slug>/plan.md` is the execution plan under the thread folder.
+- `docs/plans/<slug>/index.md` is the durable resume file; keep it compact and do not duplicate the full plan there.
+- `superpowers:writing-plans` writes the plan, then updates `index.md`, then hands off into execution.
+
 ## Integration
 
 **Required workflow skills:**
 - **superpowers:research-before-planning** - Required pre-planning (unknown resolution + hardening pass)
-- **superpowers:design-annotation-cycle** - Required before planning starts (must resolve all `<<>>` in the design doc)
+- **superpowers:design-annotation-cycle** - Required before planning starts (must resolve all `<<>>` in `docs/plans/<slug>/design.md`)
 - **superpowers:brainstorming** - Produces design and decision questions
-- **superpowers:executing-plans** - Required autonomous execution target after plan writing
-- **auto-handoff** - Required to move directly from plan writing into execution without pausing for another approval loop
+- **superpowers:executing-plans** - Required autonomous execution target after plan writing in `docs/plans/<slug>/plan.md`
+- **auto-handoff** - Required to move directly from plan writing into execution without pausing for another approval loop after `index.md` is updated

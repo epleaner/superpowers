@@ -7,7 +7,7 @@ description: Use when a design doc contains human inline comments prefixed with 
 
 ## Overview
 
-Resolve human inline notes in design documents until the design is clean, explicit, and ready for plan writing.
+Resolve human inline notes in `docs/plans/<slug>/design.md` until the design is clean, explicit, and ready for plan writing.
 
 Inline note format:
 
@@ -18,23 +18,25 @@ Core principle: every `<<>>` is either resolved into the design doc or explicitl
 ## Scope
 
 - Design phase only
-- Runs on the design doc, not the implementation plan
+- Runs in place on `docs/plans/<slug>/design.md`, not on the implementation plan
 - Planning MUST NOT begin until the design doc contains zero `<<>>` comments
+- This workflow supersedes old dated flat-file design conventions for active work in this repo
 
 ## Process
 
 ### 1) Scan
 
-Scan the design document for all lines starting with `<<>>`.
+Scan `docs/plans/<slug>/design.md` for all lines starting with `<<>>`.
 
 ### 2) Resolve
 
 For each `<<>>` note:
 
-- Apply the requested change to the nearest relevant section
+- Apply the requested change to the nearest relevant section of `docs/plans/<slug>/design.md`
 - Keep edits concrete and minimal
-- Preserve the design structure
-- Update the paired research doc if the decision or evidence changes
+- Preserve the design structure and stable path
+- Update the paired `docs/plans/<slug>/research.md` if the decision or evidence changes
+- Update `docs/plans/<slug>/index.md` if the design-phase thread state, next action, or resume target changes materially
 
 ### 3) Remove
 
@@ -49,13 +51,13 @@ If a `<<>>` note is ambiguous:
 
 ### 5) Repeat
 
-Re-scan and repeat until no `<<>>` lines remain.
+Re-scan `docs/plans/<slug>/design.md` and repeat until no `<<>>` lines remain.
 
 ## Completion Gate
 
-Design is not signed off while any `<<>>` lines remain.
+Design is not signed off while any `<<>>` lines remain in `docs/plans/<slug>/design.md`.
 
-Do not invoke `superpowers:writing-plans` until all `<<>>` notes are resolved and removed from the design doc.
+Do not invoke `superpowers:writing-plans` until all `<<>>` notes are resolved and removed from the in-place design doc.
 
 ## Red Flags
 
@@ -66,6 +68,7 @@ Do not invoke `superpowers:writing-plans` until all `<<>>` notes are resolved an
 
 ## Integration
 
-- Called by `superpowers:brainstorming` after the research doc and design doc are written
+- Called by `superpowers:brainstorming` after `docs/plans/<slug>/research.md` and `docs/plans/<slug>/design.md` are written
 - Blocks `superpowers:writing-plans` until the design doc is clean
 - Works with `superpowers:research-before-planning` so design revisions stay evidence-backed
+- Keeps `docs/plans/<slug>/design.md` as the stable current-path design file described in `docs/agent-doc-system.md`
