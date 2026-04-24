@@ -141,6 +141,13 @@ After saving the plan, offer execution choice:
 
 **2. Inline Execution** - Execute tasks in this session using executing-plans, batch execution with checkpoints
 
+- Use the stable thread-folder workflow from `docs/agent-doc-system.md`.
+- Do not create new dated flat plan files for active work in this repo.
+- `docs/plans/<slug>/plan.md` is the execution plan under the thread folder.
+- `docs/plans/<slug>/index.md` is the durable resume file; keep it compact and do not duplicate the full plan there.
+- Completed or cancelled threads MUST leave `docs/plans/` and move to `docs/archived/` with explicit archived outcome metadata; planning MUST NOT normalize new active work into a location that will be hard to archive later.
+- `superpowers:writing-plans` writes the plan, then updates `index.md`, then hands off into execution.
+
 **Which approach?"**
 
 **If Subagent-Driven chosen:**

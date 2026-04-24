@@ -32,6 +32,7 @@ For each task:
 ### Step 3: Complete Development
 
 After all tasks complete and verified:
+- If the packet is now done or cancelled, move its file/folder from `docs/plans/` to `docs/archived/`, mark the archived outcome explicitly (`done` or `cancelled`), and update the live/archive indexes plus any still-live parent roadmap docs before branch-finishing steps.
 - Announce: "I'm using the finishing-a-development-branch skill to complete this work."
 - **REQUIRED SUB-SKILL:** Use superpowers:finishing-a-development-branch
 - Follow that skill to verify tests, present options, execute choice

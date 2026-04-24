@@ -17,7 +17,12 @@ Guide completion of development work by presenting clear options and handling ch
 
 ### Step 1: Verify Tests
 
-**Before presenting options, verify tests pass:**
+Before presenting options, confirm doc hygiene is also clean for the finished work:
+- active thread docs still in progress stay in `docs/plans/`
+- completed or cancelled thread docs have already been moved to `docs/archived/`
+- live/archive plan indexes were updated in the same task
+
+**Then verify tests pass:**
 
 ```bash
 # Run project's test suite

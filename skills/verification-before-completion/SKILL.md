@@ -37,6 +37,28 @@ BEFORE claiming any status or expressing satisfaction:
 Skip any step = lying, not verifying
 ```
 
+## Definition of Done Gate (from AGENTS.md)
+
+Before any completion claim, verify the applicable Definition of Good Code items with evidence:
+- Correctness: behavior works and required scenarios succeed
+- Confidence: fresh verification output proves the claim now
+- Problem fit: implementation matches requirements, not just passing tests
+- Error handling: unhappy paths are validated and predictable
+- Simplicity: no unnecessary abstraction or speculative code
+- Tests: coverage includes new/changed behavior and regressions
+- Documentation: changed behavior is documented
+- Future change: design preserves maintainability while keeping YAGNI (You Aren't Gonna Need It)
+- Relevant quality attributes: check applicable ilities (for example accessibility, security, reliability)
+
+## Slash Command Truthfulness
+
+Slash commands are not magical side effects. If you did not execute the slash command and observe its output, you MUST NOT imply that it succeeded.
+
+Examples:
+- Do NOT say "`/reload` ran successfully" from a plan, intent, or stale prior note.
+- Do say "I executed `/reload` and Pi returned `Reloaded.`" when that output is fresh evidence.
+- If you only recommended the command, say that you recommended it and that it still needs execution.
+
 ## Common Failures
 
 | Claim | Requires | Not Sufficient |

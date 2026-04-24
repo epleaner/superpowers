@@ -82,6 +82,8 @@ project=$(basename "$(git rev-parse --show-toplevel)")
 
 ### 2. Create Worktree
 
+For non-stacked feature work, create the branch from `origin/main`, not from the current feature branch tip.
+
 ```bash
 # Determine full path
 case $LOCATION in
@@ -93,10 +95,13 @@ case $LOCATION in
     ;;
 esac
 
-# Create worktree with new branch
-git worktree add "$path" -b "$BRANCH_NAME"
+# Create worktree with new branch from mainline
+git fetch origin
+git worktree add "$path" -b "$BRANCH_NAME" origin/main
 cd "$path"
 ```
+
+If the user explicitly wants a stacked branch, stop using this default and follow `jj-stacked-prs` instead of branching from `origin/main`.
 
 ### 3. Run Project Setup
 
@@ -154,6 +159,12 @@ Ready to implement <feature-name>
 | No package.json/Cargo.toml | Skip dependency install |
 
 ## Common Mistakes
+
+### Branching from the current feature branch by accident
+
+- **Problem:** The new branch inherits unrelated commits, and the eventual PR shows a polluted diff.
+- **Fix:** For non-stacked work, ALWAYS fetch and branch the worktree from `origin/main`. Before review, run `git log --oneline origin/main..HEAD` and `gh pr diff --name-only`. If either shows unrelated scope, rebuild the branch from `origin/main` and cherry-pick only the intended commits.
+
 
 ### Skipping ignore verification
 

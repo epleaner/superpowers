@@ -10,8 +10,24 @@ Help turn ideas into fully formed designs and specs through natural collaborativ
 Start by understanding the current project context, then ask questions one at a time to refine the idea. Once you understand what you're building, present the design and get user approval.
 
 <HARD-GATE>
-Do NOT invoke any implementation skill, write any code, scaffold any project, or take any implementation action until you have presented a design and the user has approved it. This applies to EVERY project regardless of perceived simplicity.
+Do NOT invoke any implementation skill, write any code, scaffold any project, or take any implementation action until the design doc annotation cycle is complete and the design is signed off.
+
+Exception: you MAY skip this skill and proceed directly to implementation when BOTH of these are true:
+1. The user explicitly says to implement now (for example: "do this", "implement now", "just fix it").
+2. The work is clear continuation work with an active design/plan or otherwise has no unresolved design choice.
+
+For new work, ambiguous work, or revised design work, this gate still applies in full.
 </HARD-GATE>
+
+## Direct-Implementation Fast Path
+
+Use the fast path instead of brainstorming when the request is already execution-ready:
+- explicit implementation command from the user (`do this`, `implement now`, `fix it now`)
+- active `docs/plans/<slug>/design.md` or `docs/plans/<slug>/plan.md` already exists for the same work
+- clear continuation from the immediately preceding session state
+- no unresolved product/design choice remains
+
+If any real design ambiguity remains, do NOT use the fast path.
 
 ## Anti-Pattern: "This Is Too Simple To Need A Design"
 
