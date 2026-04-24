@@ -105,9 +105,26 @@ project=$(basename "$(git rev-parse --show-toplevel)")
 # For project-local: path="$LOCATION/$BRANCH_NAME"
 # For global: path="~/.config/superpowers/worktrees/$project/$BRANCH_NAME"
 
-git worktree add "$path" -b "$BRANCH_NAME"
+For non-stacked feature work, create the branch from `origin/main`, not from the current feature branch tip.
+
+```bash
+# Determine full path
+case $LOCATION in
+  .worktrees|worktrees)
+    path="$LOCATION/$BRANCH_NAME"
+    ;;
+  ~/.config/superpowers/worktrees/*)
+    path="~/.config/superpowers/worktrees/$project/$BRANCH_NAME"
+    ;;
+esac
+
+# Create worktree with new branch from mainline
+git fetch origin
+git worktree add "$path" -b "$BRANCH_NAME" origin/main
 cd "$path"
 ```
+
+If the user explicitly wants a stacked branch, stop using this default and follow `jj-stacked-prs` instead of branching from `origin/main`.
 
 **Sandbox fallback:** If `git worktree add` fails with a permission error (sandbox denial), tell the user the sandbox blocked worktree creation and you're working in the current directory instead. Then run setup and baseline tests in place.
 
@@ -180,6 +197,12 @@ Ready to implement <feature-name>
 
 - **Problem:** Creating a nested worktree inside an existing one
 - **Fix:** Always run Step 0 before creating anything
+
+### Branching from the current feature branch by accident
+
+- **Problem:** The new branch inherits unrelated commits, and the eventual PR shows a polluted diff.
+- **Fix:** For non-stacked work, ALWAYS fetch and branch the worktree from `origin/main`. Before review, run `git log --oneline origin/main..HEAD` and `gh pr diff --name-only`. If either shows unrelated scope, rebuild the branch from `origin/main` and cherry-pick only the intended commits.
+
 
 ### Skipping ignore verification
 
