@@ -50,6 +50,24 @@ Before any completion claim, verify the applicable Definition of Good Code items
 - Future change: design preserves maintainability while keeping YAGNI (You Aren't Gonna Need It)
 - Relevant quality attributes: check applicable ilities (for example accessibility, security, reliability)
 
+## Branch Scope Truthfulness
+
+If you are about to say a branch, PR, or diff is clean, scoped, or ready for review, you need fresh branch-scope evidence.
+
+Minimum required checks for that claim:
+
+```bash
+git log --oneline origin/main..HEAD
+gh pr diff --name-only
+```
+
+If either command shows unrelated scope, you MUST NOT claim the branch is ready or scoped correctly.
+
+Examples:
+- Do NOT say "the PR is clean now" without re-running both commands on the current HEAD.
+- Do say "`git log --oneline origin/main..HEAD` shows only the 3 intended commits, and `gh pr diff --name-only` shows only the 4 intended files."
+- If unrelated commits appear, say the branch is contaminated and needs recovery.
+
 ## Common Failures
 
 | Claim | Requires | Not Sufficient |
@@ -61,6 +79,7 @@ Before any completion claim, verify the applicable Definition of Good Code items
 | Regression test works | Red-green cycle verified | Test passes once |
 | Agent completed | VCS diff shows changes | Agent reports "success" |
 | Requirements met | Line-by-line checklist | Tests passing |
+| PR scope is clean | Fresh branch-only commit list + fresh PR file list | "I already looked earlier" |
 
 ## Red Flags - STOP
 
@@ -104,6 +123,12 @@ Before any completion claim, verify the applicable Definition of Good Code items
 ```
 ✅ [Run build] [See: exit 0] "Build passes"
 ❌ "Linter passed" (linter doesn't check compilation)
+```
+
+**PR scope:**
+```
+✅ [Run `git log --oneline origin/main..HEAD`] [Run `gh pr diff --name-only`] "Branch contains only the intended commits and files"
+❌ "It should be clean now" / "I rebased onto main so it's fine"
 ```
 
 **Requirements:**
