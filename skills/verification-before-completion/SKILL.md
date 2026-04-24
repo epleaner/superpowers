@@ -50,6 +50,15 @@ Before any completion claim, verify the applicable Definition of Good Code items
 - Future change: design preserves maintainability while keeping YAGNI (You Aren't Gonna Need It)
 - Relevant quality attributes: check applicable ilities (for example accessibility, security, reliability)
 
+## Slash Command Truthfulness
+
+Slash commands are not magical side effects. If you did not execute the slash command and observe its output, you MUST NOT imply that it succeeded.
+
+Examples:
+- Do NOT say "`/reload` ran successfully" from a plan, intent, or stale prior note.
+- Do say "I executed `/reload` and Pi returned `Reloaded.`" when that output is fresh evidence.
+- If you only recommended the command, say that you recommended it and that it still needs execution.
+
 ## Common Failures
 
 | Claim | Requires | Not Sufficient |

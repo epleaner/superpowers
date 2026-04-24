@@ -59,6 +59,8 @@ Design is not signed off while any `<<>>` lines remain in `docs/plans/<slug>/des
 
 Do not invoke `superpowers:writing-plans` until all `<<>>` notes are resolved and removed from the in-place design doc.
 
+Do not start implementation either. Design signoff is a real hard gate before planning or execution for any work that required design review.
+
 ## Red Flags
 
 - Writing the implementation plan before design annotations are resolved

@@ -151,6 +151,7 @@ If one sprint completes and another sprint remains planned, the default action i
 ### Step 5: Complete Development
 
 After all tasks complete and verification is clean:
+- If the packet is now done or cancelled, move its file/folder from `docs/plans/` to `docs/archived/`, mark the archived outcome explicitly (`done` or `cancelled`), and update the live/archive indexes plus any still-live parent roadmap docs before branch-finishing steps.
 - Announce: "I'm using the finishing-a-development-branch skill to complete this work."
 - **REQUIRED SUB-SKILL:** Use superpowers:finishing-a-development-branch
 - Follow that skill to verify tests, present options, and execute the chosen path
@@ -178,7 +179,7 @@ Do not force through blockers.
 ## Remember
 - Review the plan critically first.
 - Treat `plan.md` as a living execution artifact, not a static checklist.
-- Treat `index.md` as the durable thread-state entrypoint for repo-based resume.
+- Treat `index.md` as the durable thread-state entrypoint for repo-based resume while the thread is active.
 - Keep inline task status current: `[ ]`, `[-]`, `[x]`, `[!]`.
 - Use the same inline metadata vocabulary throughout: `commit`, `verification`, `note`, `blocker`, and optional `branch`.
 - For delivered items, record `commit`, `verification`, and `note`.
@@ -194,6 +195,7 @@ Do not force through blockers.
 - Use `auto_handoff` between every sprint.
 - Treat sprint boundaries as continuation points, not pause points.
 - Update `index.md` at meaningful execution boundaries with `phase`, `last_active`, `next_action`, `blocker`, and `resume_from` when helpful.
+- When a thread stops being active because it is done or cancelled, archive it in the same task instead of leaving stale completion state under `docs/plans/`.
 - Use `auto_handoff` inside a sprint whenever context is starting to balloon.
 - Use `auto_handoff` for session compaction and focus only; do not use it instead of durable repo-state updates in `index.md`.
 - Stop only when blocked, when specific user direction is required, or when the user explicitly tells you to stop at a boundary; do not guess.

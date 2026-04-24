@@ -18,7 +18,7 @@ For any feature with planning work, maintain a paired thread folder under `docs/
 - `docs/plans/<slug>/research.md`
 - `docs/plans/<slug>/index.md`
 
-`research.md` is required before the design annotation cycle can close and before handoff to `superpowers:writing-plans`. `index.md` MUST reflect the current phase, next action, and resume target whenever research changes materially.
+`research.md` is required before the design annotation cycle can close and before handoff to `superpowers:writing-plans`. `index.md` MUST reflect the current phase, next action, and resume target whenever research changes materially. If research concludes the thread is no longer active, the docset MUST be archived instead of left in `docs/plans/` with stale active state.
 
 ## Process
 
