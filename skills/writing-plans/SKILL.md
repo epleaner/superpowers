@@ -7,9 +7,9 @@ description: Use when you have a spec or requirements for a multi-step task, bef
 
 ## Overview
 
-Write comprehensive implementation plans assuming the engineer has zero context for our codebase and questionable taste. Document everything they need to know: which files to touch for each task, code, testing, docs they might need to check, how to test it. Give them the whole plan as bite-sized tasks. DRY. YAGNI. TDD. Frequent commits.
+Write cost-controlled implementation plans that give fresh workers enough context to execute correctly without dragging the parent session's full history forward. Document the goal, exact files/scope, invariants, acceptance criteria, verification oracle, and examples or prior-art to imitate. Give workers bite-sized tasks. DRY. YAGNI. TDD. Frequent commits.
 
-Assume they are a skilled developer, but know almost nothing about our toolset or problem domain. Assume they don't know good test design very well.
+Assume workers are skilled developers with fresh context. They know little about our toolset or problem domain, but they do not need full code drafts unless an API shape, test shape, or tricky algorithm is decision-critical.
 
 **Announce at start:** "I'm using the writing-plans skill to create the implementation plan."
 
@@ -105,18 +105,29 @@ git commit -m "feat: add specific feature"
 
 ## No Placeholders
 
-Every step must contain the actual content an engineer needs. These are **plan failures** — never write them:
+Every step must contain the actual content an engineer needs, but do not turn the plan into a full implementation transcript. Prefer compact worker-ready details over long code blocks.
+
+These are **plan failures** — never write them:
 - "TBD", "TODO", "implement later", "fill in details"
 - "Add appropriate error handling" / "add validation" / "handle edge cases"
-- "Write tests for the above" (without actual test code)
-- "Similar to Task N" (repeat the code — the engineer may be reading tasks out of order)
-- Steps that describe what to do without showing how (code blocks required for code steps)
+- "Write tests for the above" (without naming the exact behavior/assertions)
+- "Similar to Task N" (repeat the essential outcome and constraints — the engineer may be reading tasks out of order)
+- Steps that describe what to do without enough acceptance criteria to verify it
 - References to types, functions, or methods not defined in any task
+
+Use code blocks only when they prevent ambiguity:
+- exact test assertions for subtle behavior
+- public API/type signatures that must not drift
+- commands with expected output
+- small examples of the intended pattern
+
+Do not include full implementation bodies for routine code the worker can derive from nearby project conventions.
 
 ## Remember
 - Exact file paths always
-- Complete code in every step — if a step changes code, show the code
+- Exact behavior, invariants, and acceptance criteria for every task
 - Exact commands with expected output
+- Code snippets only where needed to prevent worker drift
 - DRY, YAGNI, TDD, frequent commits
 
 ## Self-Review
