@@ -26,15 +26,23 @@ If you haven't run the verification command in this message, you cannot claim it
 ```
 BEFORE claiming any status or expressing satisfaction:
 
-1. IDENTIFY: What command proves this claim?
-2. RUN: Execute the FULL command (fresh, complete)
-3. READ: Full output, check exit code, count failures
+1. IDENTIFY: What is the strongest practical oracle for this claim?
+   - unit/integration tests
+   - typecheck/lint/build
+   - browser automation/screenshot/visual diff
+   - curl/API smoke
+   - logs/runtime observation
+   - property/fuzz/differential checks
+   - coverage/perf checks
+   - independent rubric/spec review when no executable oracle is practical
+2. RUN: Execute the FULL command or review procedure fresh.
+3. READ: Full output, check exit code, count failures, and inspect relevant evidence.
 4. VERIFY: Does output confirm the claim?
-   - If NO: State actual status with evidence
-   - If YES: State claim WITH evidence
-5. ONLY THEN: Make the claim
+   - If NO: State actual status with evidence.
+   - If YES: State claim WITH evidence and name the oracle.
+5. ONLY THEN: Make the claim.
 
-Skip any step = lying, not verifying
+Skip any step = lying, not verifying.
 ```
 
 ## Definition of Done Gate (from AGENTS.md)

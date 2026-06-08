@@ -9,6 +9,8 @@ Execute plan by dispatching fresh subagent per task, with two-stage review after
 
 **Why subagents:** You delegate tasks to specialized agents with isolated context. By precisely crafting their instructions and context, you ensure they stay focused and succeed at their task. They should never inherit your session's context or history — you construct exactly what they need. This also preserves your own context for coordination work.
 
+Use subagents for context isolation as well as implementation. They are appropriate for noisy log/test output digestion, codebase search, prior-art discovery, independent validation, and competing approaches. Require compact reports: conclusion first, cited files/commands, key evidence, status, and next action. Do not request raw log dumps unless raw logs are the deliverable.
+
 **Core principle:** Fresh subagent per task + two-stage review (spec then quality) = high quality, fast iteration
 
 **Continuous execution:** Do not pause to check in with your human partner between tasks. Execute all tasks from the plan without stopping. The only reasons to stop are: BLOCKED status you cannot resolve, ambiguity that genuinely prevents progress, or all tasks complete. "Should I continue?" prompts and progress summaries waste their time — they asked you to execute the plan, so execute it.
@@ -40,6 +42,22 @@ digraph when_to_use {
 - Faster iteration (no human-in-loop between tasks)
 
 ## The Process
+
+## Subagent Prompt Contract
+
+Every implementer/reviewer dispatch must include:
+
+- goal
+- exact files or discovery scope
+- acceptance criteria
+- hard invariants
+- examples or prior-art files to imitate
+- anti-patterns to avoid
+- verification oracle or commands
+- source of truth for missing knowledge: prompt, code, docs, external research, or model knowledge
+- expected report schema and stop conditions
+
+If the plan task does not contain this information, add it to the dispatch prompt from the plan, codebase, or docs before launching the subagent. If the missing information cannot be recovered, stop and ask the user.
 
 ```dot
 digraph process {

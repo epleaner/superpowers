@@ -7,6 +7,22 @@ description: Use when implementing any feature or bugfix, before writing impleme
 
 ## Overview
 
+## Oracle First
+
+Before writing the first test, identify the strongest practical oracle for the change. TDD is the default oracle for behavior changes, but not the only one.
+
+Use the strongest practical evidence available:
+
+- unit/integration test for behavior
+- typecheck/lint/build for static correctness
+- browser automation, screenshot, or visual diff for UI behavior
+- `curl`/API smoke for service boundaries
+- logs/runtime observation for operational behavior
+- property/fuzz/differential tests for broad input spaces
+- coverage/perf checks for regression-sensitive work
+
+If the best oracle is not a failing automated test, state why before proceeding and still create the smallest executable or reviewable evidence loop available.
+
 Write the test first. Watch it fail. Write minimal code to pass.
 
 **Core principle:** If you didn't watch the test fail, you don't know if it tests the right thing.

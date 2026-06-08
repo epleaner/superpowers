@@ -29,9 +29,18 @@ Use the fast path instead of brainstorming when the request is already execution
 
 If any real design ambiguity remains, do NOT use the fast path.
 
-## Anti-Pattern: "This Is Too Simple To Need A Design"
+## Fast Path vs. Design Work
 
-Every project goes through this process. A todo list, a single-function utility, a config change — all of them. "Simple" projects are where unexamined assumptions cause the most wasted work. The design can be short (a few sentences for truly simple projects), but you MUST present it and get approval.
+Trivial mechanical work may skip brainstorming when all of these are true:
+
+- the user explicitly asks for the change now
+- the edit is narrow and obvious
+- no product, UX, architecture, or behavior choice remains
+- verification is straightforward
+
+Examples: typo fixes, obvious config value changes, narrow documentation corrections, or a single mechanical rename requested by the user.
+
+Do not use this fast path for new features, ambiguous behavior, UI/product choices, architectural decisions, broad refactors, or anything with unresolved tradeoffs. For those, a short design is still required.
 
 ## Checklist
 
