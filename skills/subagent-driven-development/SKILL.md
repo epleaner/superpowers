@@ -41,11 +41,9 @@ digraph when_to_use {
 - Two-stage review after each task: spec compliance first, then code quality
 - Faster iteration (no human-in-loop between tasks)
 
-## The Process
-
 ## Subagent Prompt Contract
 
-Every implementer/reviewer dispatch must include:
+Before starting the process below, ensure every implementer/reviewer dispatch includes:
 
 - goal
 - exact files or discovery scope
@@ -58,6 +56,8 @@ Every implementer/reviewer dispatch must include:
 - expected report schema and stop conditions
 
 If the plan task does not contain this information, add it to the dispatch prompt from the plan, codebase, or docs before launching the subagent. If the missing information cannot be recovered, stop and ask the user.
+
+## The Process
 
 ```dot
 digraph process {

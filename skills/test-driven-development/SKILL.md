@@ -21,9 +21,9 @@ Use the strongest practical evidence available:
 - property/fuzz/differential tests for broad input spaces
 - coverage/perf checks for regression-sensitive work
 
-If the best oracle is not a failing automated test, state why before proceeding and still create the smallest executable or reviewable evidence loop available.
+If the best oracle is not a failing automated test, state why before proceeding and still create the smallest executable or reviewable evidence loop available. This exception is for changes where a failing test is not the practical oracle, such as static correctness, visual review, operational observation, documentation, or configuration-only work.
 
-Write the test first. Watch it fail. Write minimal code to pass.
+For behavior-changing production code where a test is practical: write the test first. Watch it fail. Write minimal code to pass.
 
 **Core principle:** If you didn't watch the test fail, you don't know if it tests the right thing.
 
@@ -47,12 +47,14 @@ Thinking "skip TDD just this once"? Stop. That's rationalization.
 ## The Iron Law
 
 ```
-NO PRODUCTION CODE WITHOUT A FAILING TEST FIRST
+NO BEHAVIOR-CHANGING PRODUCTION CODE WITHOUT A FAILING TEST FIRST
 ```
 
-Write code before the test? Delete it. Start over.
+This law applies when a failing automated test is the practical oracle for the feature or bug behavior change. If the strongest practical oracle is not a failing test, document that before editing and use the smallest executable or reviewable evidence loop instead.
 
-**No exceptions:**
+Write behavior-changing production code before the test when a test is practical? Delete it. Start over.
+
+**No exceptions for testable behavior changes:**
 - Don't keep it as "reference"
 - Don't "adapt" it while writing tests
 - Don't look at it
@@ -384,4 +386,4 @@ Production code → test exists and failed first
 Otherwise → not TDD
 ```
 
-No exceptions without your human partner's permission.
+No exceptions for behavior-changing production code where a failing test is practical without your human partner's permission.
