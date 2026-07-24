@@ -7,9 +7,8 @@ Use this template when dispatching a spec document reviewer subagent.
 **Dispatch after:** Spec document is written to docs/superpowers/specs/
 
 ```
-Task tool (general-purpose):
-  description: "Review spec document"
-  prompt: |
+Pi Agent:
+  Agent({ subagent_type: "spec-reviewer", description: "Review spec document", prompt: `
     You are a spec document reviewer. Verify this spec is complete and ready for planning.
 
     **Spec to review:** [SPEC_FILE_PATH]
@@ -44,6 +43,7 @@ Task tool (general-purpose):
 
     **Recommendations (advisory, do not block approval):**
     - [suggestions for improvement]
+  `, run_in_background: true })
 ```
 
 **Reviewer returns:** Status, Issues (if any), Recommendations

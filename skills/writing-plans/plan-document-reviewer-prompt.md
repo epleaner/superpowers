@@ -7,9 +7,8 @@ Use this template when dispatching a plan document reviewer subagent.
 **Dispatch after:** The complete plan is written.
 
 ```
-Task tool (general-purpose):
-  description: "Review plan document"
-  prompt: |
+Pi Agent:
+  Agent({ subagent_type: "spec-reviewer", description: "Review plan document", prompt: `
     You are a plan document reviewer. Verify this plan is complete and ready for implementation.
 
     **Plan to review:** [PLAN_FILE_PATH]
@@ -44,6 +43,7 @@ Task tool (general-purpose):
 
     **Recommendations (advisory, do not block approval):**
     - [suggestions for improvement]
+  `, run_in_background: true })
 ```
 
 **Reviewer returns:** Status, Issues (if any), Recommendations

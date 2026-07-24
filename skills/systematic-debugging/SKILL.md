@@ -11,6 +11,8 @@ Random fixes waste time and create new bugs. Quick patches mask underlying issue
 
 **Core principle:** ALWAYS find root cause before attempting fixes. Symptom fixes are failure.
 
+**Parent orchestrator rule:** If you are the parent/orchestrator, MUST NOT run the debug loop inline. Dispatch a `debugger` subagent with the error, reproduction steps, files/logs to inspect, hard invariants, and verification oracle. Use this skill to write and enforce that prompt. The parent may do only minimal prompt-scoping checks before dispatch.
+
 **Violating the letter of this process is violating the spirit of debugging.**
 
 ## The Iron Law
@@ -50,6 +52,8 @@ You MUST complete each phase before proceeding to the next.
 ### Phase 1: Root Cause Investigation
 
 **BEFORE attempting ANY fix:**
+
+If you are the parent/orchestrator, dispatch `debugger` now. The debugger owns reproduction, evidence gathering, hypotheses, and root-cause analysis; the parent owns routing, steering, and final verification.
 
 1. **Read Error Messages Carefully**
    - Don't skip past errors or warnings
@@ -286,6 +290,7 @@ These techniques are part of systematic debugging and available in this director
 **Related skills:**
 - **superpowers:test-driven-development** - For creating failing test case (Phase 4, Step 1)
 - **superpowers:verification-before-completion** - Verify fix worked before claiming success
+- `debugger` subagent - Parent/orchestrator dispatch target for bugs, failures, flakes, and unexpected behavior
 
 ## Real-World Impact
 

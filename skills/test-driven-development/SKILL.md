@@ -25,6 +25,8 @@ If the best oracle is not a failing automated test, state why before proceeding 
 
 For behavior-changing production code where a test is practical: write the test first. Watch it fail. Write minimal code to pass.
 
+**Parent orchestrator rule:** If you are the parent/orchestrator, MUST NOT implement the TDD loop inline. Enforce TDD by dispatching a `worker` or `debugger` subagent whose prompt requires the oracle, RED/GREEN evidence, verification commands, and report schema. The parent may verify the returned evidence after the subagent completes.
+
 **Core principle:** If you didn't watch the test fail, you don't know if it tests the right thing.
 
 **Violating the letter of the rules is violating the spirit of the rules.**
@@ -368,7 +370,7 @@ Can't check all boxes? You skipped TDD. Start over.
 
 ## Debugging Integration
 
-Bug found? Write failing test reproducing it. Follow TDD cycle. Test proves fix and prevents regression.
+Bug found? A `debugger` or `worker` writes a failing test reproducing it, then follows the TDD cycle. Test proves fix and prevents regression.
 
 Never fix bugs without a test.
 

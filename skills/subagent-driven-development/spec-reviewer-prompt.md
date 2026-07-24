@@ -5,9 +5,8 @@ Use this template when dispatching a spec compliance reviewer subagent.
 **Purpose:** Verify implementer built what was requested (nothing more, nothing less)
 
 ```
-Task tool (general-purpose):
-  description: "Review spec compliance for Task N"
-  prompt: |
+Pi Agent:
+  Agent({ subagent_type: "spec-reviewer", description: "Review spec compliance for Task N", prompt: `
     You are reviewing whether an implementation matches its specification.
 
     ## What Was Requested
@@ -56,6 +55,7 @@ Task tool (general-purpose):
     **Verify by reading code, not by trusting report.**
 
     Report:
-    - ✅ Spec compliant (if everything matches after code inspection)
-    - ❌ Issues found: [list specifically what's missing or extra, with file:line references]
+    - Spec compliant (if everything matches after code inspection)
+    - Issues found: [list specifically what's missing or extra, with file:line references]
+  `, run_in_background: true })
 ```

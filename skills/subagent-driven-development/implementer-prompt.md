@@ -3,9 +3,8 @@
 Use this template when dispatching an implementer subagent.
 
 ```
-Task tool (general-purpose):
-  description: "Implement Task N: [task name]"
-  prompt: |
+Pi Agent:
+  Agent({ subagent_type: "worker", description: "Implement Task N: [task name]", prompt: `
     You are implementing Task N: [task name]
 
     ## Task Description
@@ -110,4 +109,5 @@ Task tool (general-purpose):
     Use DONE_WITH_CONCERNS if you completed the work but have doubts about correctness.
     Use BLOCKED if you cannot complete the task. Use NEEDS_CONTEXT if you need
     information that wasn't provided. Never silently produce work you're unsure about.
+  `, run_in_background: true })
 ```

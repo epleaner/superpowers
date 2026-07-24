@@ -9,9 +9,11 @@ description: Use when you have a written implementation plan to execute in a sep
 
 Load plan, review critically, execute all tasks, report when complete.
 
-**Announce at start:** "I'm using the executing-plans skill to implement this plan."
+This skill is a fallback. A parent orchestrator MUST use `superpowers:subagent-driven-development` when subagents are available. The parent MAY use this inline workflow only when the user explicitly requested synchronous inline work or the platform cannot dispatch subagents.
 
-**Note:** Tell your human partner that Superpowers works much better with access to subagents. The quality of its work will be significantly higher if run on a platform with subagent support (such as Claude Code or Codex). If subagents are available, use superpowers:subagent-driven-development instead of this skill.
+**Announce at start:** "I'm using the executing-plans fallback because subagents are unavailable or inline execution was explicitly requested."
+
+**Note:** Tell your human partner that Superpowers works much better with access to subagents. If subagents become available, stop and use superpowers:subagent-driven-development instead of this skill.
 
 ## The Process
 
@@ -23,7 +25,7 @@ Load plan, review critically, execute all tasks, report when complete.
 
 ### Step 2: Execute Tasks
 
-For each task:
+Only execute inline after confirming this is an allowed fallback. For each task:
 1. Mark as in_progress
 2. Follow each step exactly (plan has bite-sized steps)
 3. Run verifications as specified
@@ -61,6 +63,7 @@ After all tasks complete and verified:
 - Don't skip verifications
 - Reference skills when plan says to
 - Stop when blocked, don't guess
+- Parent orchestrators MUST NOT use this as the default implementation path; dispatch workers instead
 - Never start implementation on main/master branch without explicit user consent
 
 ## Integration
