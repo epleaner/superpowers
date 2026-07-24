@@ -7,9 +7,15 @@ description: Use when you have a written implementation plan to execute end-to-e
 
 Load the plan, review it critically, execute it to completion sprint by sprint, ticket by ticket, and subtask by subtask, keep the plan doc updated inline as work progresses, and stop only for blockers or specific user direction.
 
+<Pi-Subagents-Default>
+In Pi, when `Agent`, `get_subagent_result`, and `steer_subagent` are available, this skill MUST be treated as a fallback-only path. Parent/orchestrator sessions MUST use `superpowers:subagent-driven-development` to delegate plan tasks to focused workers and reviewers rather than executing implementation tasks inline. Use this skill only when subagents are unavailable, the user explicitly requested synchronous inline execution, or an already-running inline execution session must be resumed.
+</Pi-Subagents-Default>
+
 **Core principle:** `docs/plans/<slug>/plan.md` is the source of truth for execution status. `docs/plans/<slug>/index.md` is the durable thread-state entrypoint for phase, resume, next action, and blocker state.
 
 **Announce at start:** "I'm using the executing-plans skill to implement this plan."
+
+If Pi subagents are available and the user did not explicitly request inline execution, announce the fallback decision instead and switch to `superpowers:subagent-driven-development`.
 
 ## The Process
 
@@ -31,7 +37,7 @@ Load the plan, review it critically, execute it to completion sprint by sprint, 
 8. If no concerns exist, create TodoWrite and proceed.
 
 ### Step 2: Execute the Full Plan
-Default behavior: continue through the entire plan without waiting for interim approval.
+Default behavior in this fallback path: continue through the entire plan without waiting for interim approval. Parent/orchestrator sessions MUST NOT use this as permission to code inline when Pi subagents are available.
 
 Execution order:
 - work sprint by sprint
@@ -65,9 +71,9 @@ Keep ownership clean:
 - durable thread state and resume guidance stay in `index.md`
 - do not treat `auto_handoff` as a substitute for updating `index.md`
 
-Subagent rule:
-- You MUST use the installed `pi-subagents` tools: `Agent`, `get_subagent_result`, and `steer_subagent`.
-- You MUST call `Agent` with `subagent_type`, `prompt`, and `description`.
+Fallback rule:
+- If the installed `pi-subagents` tools (`Agent`, `get_subagent_result`, and `steer_subagent`) are available, STOP this inline flow and use `superpowers:subagent-driven-development` unless the user explicitly requested synchronous inline execution.
+- If you dispatch any Pi subagent from this skill, you MUST call `Agent` with `subagent_type`, `prompt`, and `description`.
 - You MUST NOT write legacy `subagent` payloads or rely on the removed `agent`/`kind`/`label` schema.
 - Use built-in types like `general-purpose`, `Explore`, and `Plan` unless the repo provides a better custom type in `.pi/agents/`.
 

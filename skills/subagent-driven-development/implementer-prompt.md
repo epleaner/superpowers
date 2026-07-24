@@ -3,9 +3,7 @@
 Use this template when dispatching an implementer subagent.
 
 ```
-Task tool (general-purpose):
-  description: "Implement Task N: [task name]"
-  prompt: |
+Agent({ subagent_type: "general-purpose", description: "Implement Task N: [task name]", prompt: `
     You are implementing Task N: [task name]
 
     ## Task Description
@@ -80,4 +78,5 @@ Task tool (general-purpose):
     - Files changed
     - Self-review findings (if any)
     - Any issues or concerns
+` })
 ```

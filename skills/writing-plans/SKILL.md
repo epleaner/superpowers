@@ -17,7 +17,9 @@ Assume they are a skilled developer, but know almost nothing about our toolset o
 
 **Write plans to:** `docs/plans/<slug>/plan.md`
 
-**Thread state file:** `docs/plans/<slug>/index.md` is the canonical durable thread-state file and MUST be updated before `auto_handoff` into execution.
+**Thread state file:** `docs/plans/<slug>/index.md` is the canonical durable thread-state file and MUST be updated before handing off into execution.
+
+**Execution handoff:** When Pi subagents are available, plan finalization MUST hand off to `superpowers:subagent-driven-development`. Inline `superpowers:executing-plans` execution is not a peer/default path; it is only a fallback when subagents are unavailable or the user explicitly requests synchronous inline execution.
 
 ## Required Inputs Before Planning
 
@@ -65,7 +67,7 @@ When the user asks for a project plan (sprints/tasks/tickets), enforce these rul
 ```markdown
 # [Feature Name] Implementation Plan
 
-> REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
+> REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development to implement this plan with delegated worker/reviewer agents when Pi subagents are available. Use superpowers:executing-plans only as a fallback when subagents are unavailable or the user explicitly requests synchronous inline execution.
 
 **Goal:** [One sentence describing what this builds]
 
@@ -176,11 +178,11 @@ After writing the plan:
 2. Save or update it in place at `docs/plans/<slug>/plan.md`.
 3. Update `docs/plans/<slug>/index.md` so it reflects planning state, points to `./plan.md` in `current_docs.plan`, sets `resume_from` appropriately, and records the next execution action.
 4. Do not ask for inline plan annotations.
-5. Continue directly into execution via `auto_handoff`.
+5. Continue directly into execution via the default subagent-driven path.
 
 Required transition:
 
-**Call `auto_handoff` with a goal that tells the next turn to start `superpowers:executing-plans` on Sprint 1 and continue through the entire plan, using additional `auto_handoff` calls between sprints and long-running tasks to keep context focused.**
+**Call `auto_handoff` with a goal that tells the next turn to start `superpowers:subagent-driven-development` on Sprint 1 and continue through the entire plan, dispatching focused Pi `Agent({ subagent_type: ... })` workers and reviewers. Use `superpowers:executing-plans` only when subagents are unavailable or the user explicitly requested synchronous inline execution.**
 
 Do not stop with "next step is to execute the plan." Continue.
 
@@ -198,5 +200,6 @@ Do not stop with "next step is to execute the plan." Continue.
 - **superpowers:research-before-planning** - Required pre-planning (unknown resolution + hardening pass)
 - **superpowers:design-annotation-cycle** - Required before planning starts (must resolve all `<<>>` in `docs/plans/<slug>/design.md`)
 - **superpowers:brainstorming** - Produces design and decision questions
-- **superpowers:executing-plans** - Required autonomous execution target after plan writing in `docs/plans/<slug>/plan.md`
+- **superpowers:subagent-driven-development** - Default autonomous execution target after plan writing in `docs/plans/<slug>/plan.md`; dispatches focused Pi `Agent({ subagent_type: ... })` workers and reviewers
+- **superpowers:executing-plans** - Fallback execution target only when subagents are unavailable or the user explicitly requested synchronous inline execution
 - **auto-handoff** - Required to move directly from plan writing into execution without pausing for another approval loop after `index.md` is updated
