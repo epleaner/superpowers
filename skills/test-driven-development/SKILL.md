@@ -46,6 +46,10 @@ Write code before the test? Delete it. Start over.
 
 Implement fresh from tests. Period.
 
+## Parent/Orchestrator Routing
+
+Parent/orchestrator sessions MUST enforce TDD through focused `worker` or `debugger` subagent prompts rather than writing implementation code inline. The parent SHOULD provide the failing-test requirement, acceptance criteria, constraints, and verification oracle in the subagent prompt, then verify the subagent reported RED and GREEN evidence before accepting completion.
+
 ## Red-Green-Refactor
 
 ```dot

@@ -47,6 +47,8 @@ Use for ANY technical issue:
 
 ## The Four Phases
 
+Parent/orchestrator sessions MUST delegate non-trivial debugging, build failures, test failures, flaky behavior, and iterative investigation loops to a focused `debugger` subagent. The parent SHOULD only do minimal prompt-scoping checks inline, then route the full root-cause investigation through the debugger prompt and verify the reported evidence before accepting the fix.
+
 You MUST complete each phase before proceeding to the next.
 
 ### Phase 1: Root Cause Investigation
