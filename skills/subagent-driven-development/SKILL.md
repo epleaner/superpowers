@@ -74,19 +74,9 @@ If `<<>>` notes appear or are discovered while executing:
 - Keep raw child transcripts out of the main thread unless a blocker or review requires quoting them.
 
 ### 3. Dispatch the implementer
-Use `Agent` for each concrete execution unit.
+Use `Agent` for each concrete execution unit. **Every dispatch is a parallel background agent.** The controller thread must remain available at all times; never block it on a subagent.
 
-Foreground example:
-
-```json
-{
-  "subagent_type": "general-purpose",
-  "description": "Implement retry banner",
-  "prompt": "Implement Ticket 2.1 from the provided plan excerpt. Current branch: ep/retry-banner. Do not create or switch branches. Follow TDD. Run the required verification commands. Return a concise summary of changes, verification, and any open questions.\n\n[insert task text and context here]"
-}
-```
-
-Background example for independent work:
+Always dispatch in the background:
 
 ```json
 {
@@ -96,6 +86,8 @@ Background example for independent work:
   "run_in_background": true
 }
 ```
+
+Foreground `Agent(...)` calls are forbidden. There is no exception, including when the user asks to wait.
 
 ### 4. Handle questions and drift
 - If a subagent asks a question or starts drifting, answer with `steer_subagent`.
@@ -112,16 +104,16 @@ Example:
 ```
 
 ### 5. Collect background results
-- Use `get_subagent_result` for background agents.
-- Wait when needed; do not guess completion.
+- Use `get_subagent_result({ wait: false })` for non-blocking status checks.
+- Never use `get_subagent_result({ wait: true })` to block the controller thread; process results from completion notifications instead.
 - Synthesize the result into the controller thread before moving on.
 
-Example:
+Example status check:
 
 ```json
 {
   "agent_id": "agent_123",
-  "wait": true
+  "wait": false
 }
 ```
 
@@ -167,14 +159,14 @@ You: I'm using Subagent-Driven Development to execute this plan.
 [Create TodoWrite]
 
 Task 1: implement retry banner
-- Dispatch Agent(general-purpose) with the exact task text
+- Dispatch Agent(general-purpose, run_in_background=true) with the exact task text
 - Agent asks one clarifying question
 - Answer via steer_subagent
-- Collect final result
-- Dispatch spec review Agent
+- Collect final result from completion notification (wait: false status checks only)
+- Dispatch spec review Agent (run_in_background=true)
 - Implementer fixes one spec gap
 - Re-run spec review
-- Dispatch code-quality review Agent
+- Dispatch code-quality review Agent (run_in_background=true)
 - Implementer fixes one maintainability issue
 - Re-run code-quality review
 - Mark task complete
@@ -182,15 +174,15 @@ Task 1: implement retry banner
 Task 2: independent parser cleanup
 - Dispatch Agent(..., run_in_background=true)
 - Continue prepping the next task
-- Use get_subagent_result(wait=true) when ready
-- Run the same two review loops
+- Use get_subagent_result(wait=false) for status; process completion notification when done
+- Run the same two review loops (always background)
 ```
 
 ## Advantages
 
 - Fresh context per task
 - Easy steering without losing the run
-- Optional background parallelism for independent tasks
+- Background parallelism for all tasks; the controller thread never blocks on a subagent
 - Strong quality gates via explicit spec and quality review loops
 - Controller thread stays clean because it stores only synthesized state
 

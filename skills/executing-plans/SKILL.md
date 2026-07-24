@@ -8,14 +8,14 @@ description: Use when you have a written implementation plan to execute end-to-e
 Load the plan, review it critically, execute it to completion sprint by sprint, ticket by ticket, and subtask by subtask, keep the plan doc updated inline as work progresses, and stop only for blockers or specific user direction.
 
 <Pi-Subagents-Default>
-In Pi, when `Agent`, `get_subagent_result`, and `steer_subagent` are available, this skill MUST be treated as a fallback-only path. Parent/orchestrator sessions MUST use `superpowers:subagent-driven-development` to delegate plan tasks to focused workers and reviewers rather than executing implementation tasks inline. Use this skill only when subagents are unavailable, the user explicitly requested synchronous inline execution, or an already-running inline execution session must be resumed.
+In Pi, when `Agent`, `get_subagent_result`, and `steer_subagent` are available, this skill MUST be treated as a fallback-only path. Parent/orchestrator sessions MUST use `superpowers:subagent-driven-development` to delegate plan tasks to focused workers and reviewers rather than executing implementation tasks inline. Use this skill only when subagents are unavailable (tooling failure) or an already-running inline execution session must be resumed. Inline execution is never offered as a user preference; the main orchestration thread must remain available at all times.
 </Pi-Subagents-Default>
 
 **Core principle:** `docs/plans/<slug>/plan.md` is the source of truth for execution status. `docs/plans/<slug>/index.md` is the durable thread-state entrypoint for phase, resume, next action, and blocker state.
 
 **Announce at start:** "I'm using the executing-plans skill to implement this plan."
 
-If Pi subagents are available and the user did not explicitly request inline execution, announce the fallback decision instead and switch to `superpowers:subagent-driven-development`.
+If Pi subagents are available, announce the fallback decision instead and switch to `superpowers:subagent-driven-development`. Never offer or accept synchronous inline execution as a user preference; the main thread stays available.
 
 ## The Process
 
@@ -72,7 +72,7 @@ Keep ownership clean:
 - do not treat `auto_handoff` as a substitute for updating `index.md`
 
 Fallback rule:
-- If the installed `pi-subagents` tools (`Agent`, `get_subagent_result`, and `steer_subagent`) are available, STOP this inline flow and use `superpowers:subagent-driven-development` unless the user explicitly requested synchronous inline execution.
+- If the installed `pi-subagents` tools (`Agent`, `get_subagent_result`, and `steer_subagent`) are available, STOP this inline flow and use `superpowers:subagent-driven-development`. Inline execution is a tooling-failure fallback only, never a user-selectable option.
 - If you dispatch any Pi subagent from this skill, you MUST call `Agent` with `subagent_type`, `prompt`, and `description`.
 - You MUST NOT write legacy `subagent` payloads or rely on the removed `agent`/`kind`/`label` schema.
 - Use built-in types like `general-purpose`, `Explore`, and `Plan` unless the repo provides a better custom type in `.pi/agents/`.
@@ -81,7 +81,7 @@ For each execution unit:
 1. Update the plan doc inline from `[ ]` to `[-]` when starting.
 2. If the unit is a grouped sprint, phase, or ticket, execute its child items in order unless the plan explicitly allows parallelism.
 3. If the unit is a leaf task, dispatch a focused `Agent` worker with the exact task text and context.
-4. If sibling leaf tasks can safely run in parallel, you MAY dispatch them in the background and later collect them with `get_subagent_result`.
+4. If sibling leaf tasks can safely run in parallel, dispatch them all in the background and collect results from completion notifications using `get_subagent_result({ wait: false })`.
 5. Use `steer_subagent` to answer questions or correct drift instead of restarting good runs.
 6. Run verifications as specified and record inline `verification`.
 7. When delivered, update the plan doc inline to `[x]` and record `commit`, `verification`, and `note`.
@@ -105,12 +105,12 @@ Example implementation dispatch:
 }
 ```
 
-Example background collection:
+Example background collection (non-blocking status check):
 
 ```json
 {
   "agent_id": "agent_123",
-  "wait": true
+  "wait": false
 }
 ```
 
@@ -190,7 +190,7 @@ Do not force through blockers.
 - For delivered items, record `commit`, `verification`, and `note`.
 - For blocked items, record `blocker`; use `branch` only when it materially helps the next session resume.
 - Use `Agent` for focused execution units.
-- Use `get_subagent_result` to collect background work.
+- Use `get_subagent_result({ wait: false })` to collect background work status; process results from completion notifications.
 - Use `steer_subagent` to unblock or redirect running agents.
 - Never write instructions for the removed legacy `subagent` tool.
 - Follow plan steps exactly.
