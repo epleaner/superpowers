@@ -67,6 +67,16 @@ If `<<>>` notes appear or are discovered while executing:
 - Keep the controller thread focused on status, blockers, synthesized outcomes, and verification results.
 - Do NOT make subagents read the plan file unless that is the task under test.
 
+#### Controller discipline
+
+The controller MUST NOT:
+- Read implementation files inline (delegate to `scout` or pass to the implementer).
+- Run diagnostic or build commands inline (delegate to the implementer or `debugger`).
+- Edit, write, or patch code inline (delegate to `worker`).
+- Iterate on investigation inline.
+
+The controller reads the plan once, extracts task text, writes subagent prompts, dispatches, steers, and synthesizes results. Everything else is a subagent's job. One read-only routing command per turn is the ceiling.
+
 ### 2. Decompose grouped work yourself
 - Process top-level sprints or other grouped phases sequentially unless the plan explicitly allows top-level parallelism.
 - Break grouped parent work into leaf execution units before dispatch.
