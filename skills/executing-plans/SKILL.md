@@ -88,6 +88,7 @@ For each execution unit:
 8. If blocked, update the plan doc inline to `[!]`, record the exact `blocker`, and include `branch` only if it materially helps resume the work.
 9. After finishing one execution unit, continue directly into the next planned unit unless a stop condition applies.
 10. At any meaningful boundary, make the corresponding minimal `index.md` update before moving on or handing off.
+11. Immediately after a plan task or other execution unit is marked `[x]`, provide the parent/user a concise plan-status report only after its verification and required review gate pass. Include: completed tasks, current task or phase, remaining tasks, verification state, blockers, and the immediate next action. If background agents are still running, name them under current work. Do not emit a report for an unverified or blocked unit.
 
 Canonical inline examples:
 - `[ ] Ticket 2.1: Add retry banner`
@@ -144,6 +145,8 @@ Examples of good handoff goals:
 - `Finish Ticket 3.4 in docs/plans/foo/plan.md, then continue the remaining Sprint 3 tasks with the same execution discipline.`
 
 ### Step 4: Continue Until Completion
+Before entering the finishing workflow, emit one final concise plan-status report using the same fields (completed, current, remaining, verification, blockers, immediate next action). State that no planned tasks remain only when the plan checklist confirms it.
+
 Keep executing the plan until one of these is true:
 - every planned item is complete and verified
 - you are blocked

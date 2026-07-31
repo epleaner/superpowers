@@ -134,6 +134,7 @@ After implementation completes:
 3. Only after spec compliance is clean, dispatch a code-quality review agent.
 4. If it finds issues, send the fixes back to the implementer and re-review.
 5. Mark the task done only when both reviews are clean.
+6. Immediately after marking a plan task done, provide the parent/user a concise plan-status report. This is a controller responsibility, not a worker responsibility, and it applies only after implementation and both review gates are verified. Include: completed tasks, current task or phase, remaining tasks, verification state, blockers, and the immediate next action. If background agents are still running, name them under current work instead of implying the plan is complete. Do not emit a report for an unverified or review-blocked task.
 
 Review example:
 
@@ -157,6 +158,7 @@ Then:
 
 ### 7. Finish the session
 After all tasks are complete and verified:
+- Emit one final concise plan-status report using the same fields (completed, current, remaining, verification, blockers, immediate next action), explicitly stating that no planned tasks remain only when the plan checklist confirms it.
 - use `superpowers:finishing-a-development-branch`
 
 ## Example Workflow
