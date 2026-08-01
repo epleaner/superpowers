@@ -9,10 +9,10 @@ description: "You MUST use this before any creative work - creating features, bu
 
 Help turn ideas into fully formed designs and specs through natural collaborative dialogue.
 
-Start by understanding the current project context, then ask questions one at a time to refine the idea. Once you understand what you're building, write the research doc and design doc, get the design doc annotated and signed off, then hand off to planning.
+Start by understanding the current project context, then ask questions one at a time to refine the idea. Once you understand what you're building, write the research doc and design doc, then hand off to planning.
 
 <HARD-GATE>
-Do NOT invoke any implementation skill, write any code, scaffold any project, or take any implementation action until the design doc annotation cycle is complete and the design is signed off. This applies to EVERY project regardless of perceived simplicity.
+Do NOT invoke any implementation skill, write any code, scaffold any project, or take any implementation action until the design doc is written and the design is approved. This applies to EVERY project regardless of perceived simplicity.
 </HARD-GATE>
 
 ## Anti-Pattern: "This Is Too Simple To Need A Design"
@@ -30,8 +30,7 @@ You MUST create a task for each of these items and complete them in order:
 5. **Create or reuse the initiative thread** — use `docs/plans/<slug>/` with `index.md`, `research.md`, and `design.md`
 6. **Write research doc** — save to `docs/plans/<slug>/research.md` and update `docs/plans/<slug>/index.md`
 7. **Write design doc** — save to `docs/plans/<slug>/design.md` and update `docs/plans/<slug>/index.md`
-8. **Run design annotation cycle** — open the design doc in Zed, collect `<<>>` feedback, resolve it with `superpowers:design-annotation-cycle`
-9. **Transition to implementation** — invoke `writing-plans`, then continue autonomously into execution
+8. **Transition to implementation** — invoke `writing-plans`, then continue autonomously into execution
 
 ## Process Flow
 
@@ -44,8 +43,6 @@ digraph brainstorming {
     "Create or reuse thread folder" [shape=box];
     "Write research doc" [shape=box];
     "Write design doc" [shape=box];
-    "Design doc annotated?" [shape=diamond];
-    "Run design-annotation-cycle" [shape=box];
     "Invoke writing-plans" [shape=doublecircle];
 
     "Explore project context" -> "Ask clarifying questions";
@@ -54,10 +51,7 @@ digraph brainstorming {
     "Present design sections" -> "Create or reuse thread folder";
     "Create or reuse thread folder" -> "Write research doc";
     "Write research doc" -> "Write design doc";
-    "Write design doc" -> "Design doc annotated?";
-    "Design doc annotated?" -> "Run design-annotation-cycle" [label="feedback present"];
-    "Run design-annotation-cycle" -> "Design doc annotated?";
-    "Design doc annotated?" -> "Invoke writing-plans" [label="signed off"];
+    "Write design doc" -> "Invoke writing-plans";
 }
 ```
 
@@ -85,17 +79,11 @@ digraph brainstorming {
 - Ask after each section whether it looks right so far
 - Cover: architecture, components, data flow, error handling, testing
 - Be ready to go back and clarify if something doesn't make sense
-- After the conversational design is stable, write the research doc and design doc before signoff
+- After the conversational design is stable, write the research doc and design doc to capture it
 
-## Design Doc Signoff
+## Design Approval
 
-After saving the first design doc draft:
-- Open `docs/plans/<slug>/design.md` in Zed immediately
-- Ask the user to annotate the file with inline `<<>>` comments
-- **REQUIRED SUB-SKILL:** use `superpowers:design-annotation-cycle`
-- Repeat until zero `<<>>` lines remain
-- Update `docs/plans/<slug>/index.md` so it reflects the current phase, next action, and `resume_from`
-- Only then is the design locked
+The design is approved conversationally during step 4 (Present design sections). After writing the design doc, update `docs/plans/<slug>/index.md` so it reflects the current phase, next action, and `resume_from`.
 
 The design doc, not the implementation plan, is the human signoff artifact.
 
@@ -111,8 +99,8 @@ The design doc, not the implementation plan, is the human signoff artifact.
 - Commit the docs to git
 
 **Implementation:**
-- Invoke the writing-plans skill to create a detailed implementation plan after design signoff
-- Planning and execution continue autonomously after design signoff unless a real blocker appears
+- Invoke the writing-plans skill to create a detailed implementation plan
+- Planning and execution continue autonomously after the design doc is written unless a real blocker appears
 - Do NOT create a second annotation loop on the plan
 
 ## Key Principles
@@ -122,5 +110,5 @@ The design doc, not the implementation plan, is the human signoff artifact.
 - **YAGNI (You Aren't Gonna Need It) ruthlessly** - Remove unnecessary features from all designs
 - **Explore alternatives** - Always propose 2-3 approaches before settling
 - **Research and brainstorming are a loop** - Research answers decision questions; brainstorming uses those answers
-- **Incremental validation** - Present design, then get signoff on the design doc before moving on
+- **Incremental validation** — Present design, confirm it's approved, then proceed
 - **Be flexible** - Go back and clarify when something doesn't make sense

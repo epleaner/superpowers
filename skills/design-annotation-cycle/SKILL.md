@@ -1,6 +1,6 @@
 ---
 name: design-annotation-cycle
-description: Use when a design doc contains human inline comments prefixed with <<>> and the design must be revised to signoff before plan writing.
+description: Use when a design doc contains human inline comments prefixed with <<>> and the design needs revision before signoff.
 ---
 
 # Design Annotation Cycle
@@ -55,9 +55,7 @@ Re-scan `docs/plans/<slug>/design.md` and repeat until no `<<>>` lines remain.
 
 ## Completion Gate
 
-Design is not signed off while any `<<>>` lines remain in `docs/plans/<slug>/design.md`.
-
-Do not invoke `superpowers:writing-plans` until all `<<>>` notes are resolved and removed from the in-place design doc.
+The annotation cycle is complete when no `<<>>` lines remain in `docs/plans/<slug>/design.md`.
 
 ## Red Flags
 
@@ -68,7 +66,6 @@ Do not invoke `superpowers:writing-plans` until all `<<>>` notes are resolved an
 
 ## Integration
 
-- Called by `superpowers:brainstorming` after `docs/plans/<slug>/research.md` and `docs/plans/<slug>/design.md` are written
-- Blocks `superpowers:writing-plans` until the design doc is clean
+- Optional refinement step after `docs/plans/<slug>/research.md` and `docs/plans/<slug>/design.md` are written
 - Works with `superpowers:research-before-planning` so design revisions stay evidence-backed
 - Keeps `docs/plans/<slug>/design.md` as the stable current-path design file described in `docs/agent-doc-system.md`

@@ -26,7 +26,6 @@ Assume they are a skilled developer, but know almost nothing about our toolset o
 Before writing the implementation plan, verify:
 
 - Design is locked from `superpowers:brainstorming`
-- Design annotation cycle is complete via `superpowers:design-annotation-cycle`
 - Paired research doc exists at `docs/plans/<slug>/research.md`
 - Paired design doc exists at `docs/plans/<slug>/design.md`
 - `docs/plans/<slug>/index.md` exists and is the current thread entrypoint
@@ -163,10 +162,10 @@ git commit -m "feat: add specific feature"
 
 ## Tracker Timing Rule
 
-After the design doc is signed off, planning becomes execution prep rather than another approval phase.
+After the design doc is written, planning becomes execution prep rather than another approval phase.
 
 That means:
-- you MAY create or update beads/tasks to match the execution plan once the design annotation cycle is complete
+- you MAY create or update beads/tasks to match the execution plan once the design doc is written
 - you MUST NOT pause for a separate plan-approval loop unless the user explicitly asks for one
 - if tracker structure changes, keep it aligned with the final written plan rather than with intermediate drafts
 
@@ -198,7 +197,6 @@ Do not stop with "next step is to execute the plan." Continue.
 
 **Required workflow skills:**
 - **superpowers:research-before-planning** - Required pre-planning (unknown resolution + hardening pass)
-- **superpowers:design-annotation-cycle** - Required before planning starts (must resolve all `<<>>` in `docs/plans/<slug>/design.md`)
 - **superpowers:brainstorming** - Produces design and decision questions
 - **superpowers:subagent-driven-development** - Default autonomous execution target after plan writing in `docs/plans/<slug>/plan.md`; dispatches focused Pi `Agent({ subagent_type: ... })` workers and reviewers
 - **superpowers:executing-plans** - Fallback execution target only when subagents are unavailable or the user explicitly requested synchronous inline execution

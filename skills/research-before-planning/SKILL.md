@@ -18,7 +18,7 @@ For any feature with planning work, maintain a paired thread folder under `docs/
 - `docs/plans/<slug>/research.md`
 - `docs/plans/<slug>/index.md`
 
-`research.md` is required before the design annotation cycle can close and before handoff to `superpowers:writing-plans`. `index.md` MUST reflect the current phase, next action, and resume target whenever research changes materially.
+`research.md` is required before the design doc is finalized and before handoff to `superpowers:writing-plans`. `index.md` MUST reflect the current phase, next action, and resume target whenever research changes materially.
 
 ## Process
 
@@ -48,7 +48,7 @@ Use research findings to choose the design path. Continue loop until decision-cr
 Before design signoff:
 
 - Save the current evidence and decisions into `docs/plans/<slug>/research.md`
-- Keep the research doc aligned with `docs/plans/<slug>/design.md` during annotation resolution
+- Keep the research doc aligned with `docs/plans/<slug>/design.md`
 - Update `docs/plans/<slug>/index.md` whenever research changes the active phase or next action
 - Update the research doc whenever design feedback changes a decision or evidence trail
 
@@ -64,7 +64,7 @@ After the design is stable enough to document, run a thorough hardening pass bef
 
 If hardening reveals architecture-level conflicts, reopen brainstorming.
 
-If no conflicts remain and the design annotation cycle is clean, planning can proceed.
+If no conflicts remain, planning can proceed.
 
 ## Red Flags
 

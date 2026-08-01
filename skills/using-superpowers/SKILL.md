@@ -69,34 +69,15 @@ digraph skill_flow {
 }
 ```
 
-## Design Annotation Gate
-
-When a design document is created or revised during `brainstorming`, you MUST enforce a human annotation loop on the design doc before plan writing.
-
-Required sequence:
-1. Save the research doc and design doc.
-2. Open the design doc in Zed immediately after the first write.
-3. Ask the user to annotate the design doc with inline `<<>>` comments.
-4. Wait for annotations or explicit user signoff.
-5. Run `design-annotation-cycle`.
-6. Re-scan and repeat until zero `<<>>` lines remain.
-
-Rules:
-- You MUST NOT present the design as signed off before step 5.
-- You MUST NOT invoke `writing-plans` while any `<<>>` lines remain in the design doc.
-- If the user opts out of annotation, you MAY proceed directly to `design-annotation-cycle` scan/clean verification.
-
-`brainstorming` is incomplete until this gate is satisfied.
-
 ## Autonomous Plan Flow
 
-After the design annotation gate is clean:
+After brainstorming is complete:
 - You MUST invoke `writing-plans` without asking for a second approval loop on the plan.
 - `writing-plans` MUST write the final implementation plan and continue autonomously.
 - `writing-plans` MUST use `auto_handoff` to continue directly into `executing-plans`.
 - `executing-plans` MUST continue through the entire plan unless a real blocker or required user decision appears.
 
-Do not insert a separate human annotation cycle on the implementation plan.
+Do not insert a separate human annotation cycle on the implementation plan. The design doc, not the implementation plan, is the human signoff artifact.
 
 ## Red Flags
 
