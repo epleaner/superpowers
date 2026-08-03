@@ -72,6 +72,7 @@ You MUST complete each phase before proceeding to the next.
    - Git diff, recent commits
    - New dependencies, config changes
    - Environmental differences
+   - **For UI issues: ask the user what URL they are testing on (localhost vs deployed/hosted URL).** A fix verified locally is invisible on a deployed URL that hasn't been redeployed. Ask "are you on localhost or the deployed site?" on the FIRST "still doesn't work" reply.
 
 4. **Gather Evidence in Multi-Component Systems**
 
@@ -230,6 +231,7 @@ If you catch yourself thinking:
 - Proposing solutions before tracing data flow
 - **"One more fix attempt" (when already tried 2+)**
 - **Each fix reveals new problem in different place**
+- **User says "still doesn't work" after a fix you verified locally** — Check what URL they're testing on (localhost vs deployed). The fix may be correct but invisible because the deployed URL hasn't been redeployed.
 
 **ALL of these mean: STOP. Return to Phase 1.**
 
